@@ -2,11 +2,15 @@ PGraphics perspectiveOne;
 PGraphics perspectiveTwo;
 PGraphics dynamicPerspective;
 
+FileNamer fileNamer;
+
 void setup() {
   size(800, 800, P3D);
   perspectiveOne = createGraphics(width, height, P3D);
   perspectiveTwo = createGraphics(width, height, P3D);
   dynamicPerspective = createGraphics(width, height, P3D);
+
+  fileNamer = new FileNamer("output/export", "png");
 }
 
 void draw() {
@@ -53,4 +57,12 @@ void drawScene(PGraphics g, Box boxOne, Box boxTwo, PVector cameraPos) {
 
   g.popMatrix();
   g.endDraw();
+}
+
+void keyReleased() {
+  switch (key) {
+    case 'r':
+      save(savePath(fileNamer.next()));
+      break;
+  }
 }
