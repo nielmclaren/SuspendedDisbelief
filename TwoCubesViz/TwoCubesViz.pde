@@ -52,7 +52,7 @@ void drawScene(PGraphics g, Box boxOne, Box boxTwo, String perspective) {
 }
 
 PVector getCameraPosFromBox(Box box) {
-  float r = 300;
+  float r = 200;
   PVector result = new PVector();
 
   PMatrix3D m = new PMatrix3D();
@@ -67,20 +67,20 @@ void drawScene(PGraphics g, Box boxOne, Box boxTwo, PVector cameraPos) {
   g.beginDraw();
   g.background(0);
   g.camera(cameraPos.x, cameraPos.y, cameraPos.z, 0, 0, 0, 0, 1, 0);
-  g.lights();
 
-  g.noStroke();
+  g.fill(0);
+  g.strokeWeight(5);
   g.pushMatrix();
 
   g.pushMatrix();
-  g.fill(#7effdb);
+  g.stroke(#7effdb);
   g.rotateY(boxOne.yaw);
   g.rotateX(boxOne.pitch);
   g.box(boxOne.size);
   g.popMatrix();
 
   g.pushMatrix();
-  g.fill(#b693fe);
+  g.stroke(#b693fe);
   g.rotateY(boxTwo.yaw);
   g.rotateX(boxTwo.pitch);
   g.box(boxTwo.size);
