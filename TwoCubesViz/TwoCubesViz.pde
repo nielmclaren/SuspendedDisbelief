@@ -13,9 +13,13 @@ void setup() {
   perspectiveTwo = createGraphics(width, height, P3D);
   dynamicPerspective = createGraphics(width, height, P3D);
 
-  boxOne = new Box(100, random(TWO_PI), random(-PI/2, PI/2));
+  reset();
 
   fileNamer = new FileNamer("output/export", "png");
+}
+
+void reset() {
+  boxOne = new Box(100, random(TWO_PI), random(-PI/2, PI/2));
 }
 
 void draw() {
@@ -92,6 +96,9 @@ void drawScene(PGraphics g, Box boxOne, Box boxTwo, PVector cameraPos) {
 
 void keyReleased() {
   switch (key) {
+    case 'e':
+      reset();
+      break;
     case 'r':
       save(savePath(fileNamer.next()));
       break;
