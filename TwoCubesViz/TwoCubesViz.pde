@@ -4,6 +4,8 @@ boolean isDrawBoxTwo;
 boolean isDrawHud;
 boolean isOccluding;
 
+int tileMargin = 16;
+
 FileNamer fileNamer;
 
 void setup() {
@@ -21,7 +23,7 @@ void setup() {
 
 void reset() {
   background(0);
-  drawSmallMultiples(g, 1350, 900);
+  drawSmallMultiples(g, 64);
 }
 
 void draw() {
@@ -35,16 +37,14 @@ void mouseMoved() {
   }
 }
 
-void drawSmallMultiples(PGraphics g, int drawWidth, int drawHeight) {
-  int numCols = 10;
-  int numRows = 6;
-  int outerWidth = floor(drawWidth / numCols);
-  int outerHeight = floor(drawHeight / numRows);
-  int margin = 16;
-  int innerWidth = outerWidth - margin;
-  int innerHeight = outerHeight - 2 * margin;
-
-  // FIXME: Keep the buffer dimensions square.
+void drawSmallMultiples(PGraphics g, int approxTileSize) {
+  int size = getSize(approxTileSize, width, height, tileMargin);
+  int outerWidth = size + tileMargin;
+  int outerHeight = size + 2 * tileMargin;
+  int innerWidth = outerWidth - tileMargin;
+  int innerHeight = outerHeight - 2 * tileMargin;
+  int numCols = floor(width / outerWidth);
+  int numRows = floor(height / outerHeight);
 
   PGraphics perspectiveBuffer = createGraphics(innerWidth, innerHeight, P3D);
 
@@ -60,11 +60,11 @@ void drawSmallMultiples(PGraphics g, int drawWidth, int drawHeight) {
       if (col % 2 == 0) {
         if (isDrawBoxOne) {
           drawSceneTo(perspectiveBuffer, boxOne, boxTwo, "boxOne");
-          g.image(perspectiveBuffer, col * outerWidth + margin, row * outerHeight + margin, innerWidth, innerHeight);
+          g.image(perspectiveBuffer, col * outerWidth + tileMargin, row * outerHeight + tileMargin, innerWidth, innerHeight);
         }
       } else if (isDrawBoxTwo) {
         drawSceneTo(perspectiveBuffer, boxOne, boxTwo, "boxTwo");
-        g.image(perspectiveBuffer, col * outerWidth, row * outerHeight + margin, innerWidth, innerHeight);
+        g.image(perspectiveBuffer, col * outerWidth, row * outerHeight + tileMargin, innerWidth, innerHeight);
       }
 
       if (isDrawHud) {
@@ -73,6 +73,21 @@ void drawSmallMultiples(PGraphics g, int drawWidth, int drawHeight) {
       }
     }
   }
+}
+
+int getSize(int approxTileSize, int canvasWidth, int canvasHeight, int margin) {
+  float tileOuterWidth = approxTileSize + margin;
+  float tileOuterHeight = approxTileSize + 2 * margin;
+
+  if (canvasWidth / (2 * tileOuterWidth) < canvasHeight / tileOuterHeight) {
+    // number of columns is the limiting factor.
+    int numCols = floor(canvasWidth / (2 * tileOuterWidth));
+    return floor((float)canvasWidth / (2 * numCols)) - margin;
+  }
+
+  // number of rows is the limiting factor.
+  int numRows = floor(canvasHeight / tileOuterHeight);
+  return floor((float)canvasHeight / numRows) - 2 * margin;
 }
 
 void drawSceneTo(PGraphics g, Box boxOne, Box boxTwo, String perspective) {
@@ -99,9 +114,6 @@ PVector getCameraPosFromBox(Box box) {
   m.rotate(box.yaw, 0, 1, 0);
   m.rotate(box.pitch, 0, 0, 1);
   m.mult(new PVector(r, 0, 0), result);
-
-  //result.y = 20;
-  println(box.yaw, box.pitch, result);
 
   return result;
 }
