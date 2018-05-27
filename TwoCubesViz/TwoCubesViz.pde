@@ -130,10 +130,10 @@ void drawSceneTo(PGraphics g, Box boxOne, Box boxTwo, PVector cameraPos) {
   }
   g.strokeWeight(2);
 
-  g.stroke(#7effdb); // green
+  g.stroke(#7fbf7a); // green
   drawBox(g, boxOne);
 
-  g.stroke(#b693fe); // purple
+  g.stroke(#af8dc3); // purple
   drawBox(g, boxTwo);
 
   g.endDraw();
