@@ -1,4 +1,6 @@
 
+boolean isDrawBoxOne;
+boolean isDrawBoxTwo;
 boolean isDrawHud;
 boolean isOccluding;
 
@@ -7,6 +9,8 @@ FileNamer fileNamer;
 void setup() {
   fullScreen(P3D);
 
+  isDrawBoxOne = true;
+  isDrawBoxTwo = true;
   isDrawHud = false;
   isOccluding = true;
 
@@ -34,39 +38,38 @@ void mouseMoved() {
 void drawSmallMultiples(PGraphics g, int drawWidth, int drawHeight) {
   int numCols = 10;
   int numRows = 6;
-  int w = floor(drawWidth / numCols);
-  int h = floor(drawHeight / numRows);
+  int outerWidth = floor(drawWidth / numCols);
+  int outerHeight = floor(drawHeight / numRows);
+  int margin = 16;
+  int innerWidth = outerWidth - margin;
+  int innerHeight = outerHeight - 2 * margin;
 
-  PGraphics perspectiveBuffer = createGraphics(w, h, P3D);
+  // FIXME: Keep the buffer dimensions square.
+
+  PGraphics perspectiveBuffer = createGraphics(innerWidth, innerHeight, P3D);
 
   Box boxOne = new Box(100, 0, 0);
 
   for (int col = 0; col < numCols; col++) {
-      float yaw = map(mouseX, 0, 300, 0, PI/2) + map(floor(col / 2) * 2, 0, numCols, 0, PI/2);
+      float yaw = map(floor(col / 2) * 2, 0, numCols, PI/16, PI/2);
 
     for (int row = 0; row < numRows; row++) {
-      float pitch = map(mouseY, 0, 300, 0, PI/2) + map(row, 0, numRows, PI/8, PI/4);
+      float pitch = map(row, 0, numRows, PI/8, PI/4);
       Box boxTwo = new Box(100, yaw, pitch);
       
-      String perspective = col % 2 == 0 ? "boxOne" : "boxTwo";
-      drawSceneTo(perspectiveBuffer, boxOne, boxTwo, perspective);
-      g.image(perspectiveBuffer, col * w, row * h, w, h);
-
-      g.noFill();
-
-      g.stroke(128);
-      g.strokeWeight(2);
-      g.line(col * w, row * h, col * w + w, row * h); // top
-      g.line(col * w, row * h + h, col * w + w, row * h + h); // bottom
       if (col % 2 == 0) {
-        g.line(col * w, row * h, col * w, row * h + h); // left
-      } else {
-        g.line(col * w + w, row * h, col * w + w, row * h + h); // right
+        if (isDrawBoxOne) {
+          drawSceneTo(perspectiveBuffer, boxOne, boxTwo, "boxOne");
+          g.image(perspectiveBuffer, col * outerWidth + margin, row * outerHeight + margin, innerWidth, innerHeight);
+        }
+      } else if (isDrawBoxTwo) {
+        drawSceneTo(perspectiveBuffer, boxOne, boxTwo, "boxTwo");
+        g.image(perspectiveBuffer, col * outerWidth, row * outerHeight + margin, innerWidth, innerHeight);
       }
 
       if (isDrawHud) {
-        g.text("yaw: " + floor(degrees(yaw)) + ", pitch: " + floor(degrees(pitch)) + "\n" + perspective,
-          col * w + 6, row * h + 16);
+        g.text("yaw: " + floor(degrees(yaw)) + ", pitch: " + floor(degrees(pitch)),
+          col * outerWidth + 6, row * outerHeight + 16);
       }
     }
   }
@@ -148,6 +151,21 @@ void drawBox(PGraphics g, Box box) {
 
 void keyReleased() {
   switch (key) {
+    case '1':
+      isDrawBoxOne = true;
+      isDrawBoxTwo = false;
+      reset();
+      break;
+    case '2':
+      isDrawBoxOne = false;
+      isDrawBoxTwo = true;
+      reset();
+      break;
+    case '3':
+      isDrawBoxOne = true;
+      isDrawBoxTwo = true;
+      reset();
+      break;
     case 'e':
       reset();
       break;
