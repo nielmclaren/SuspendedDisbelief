@@ -1,25 +1,171 @@
-PGraphics perspectiveOne;
-PGraphics perspectiveTwo;
-PGraphics homePerspective;
-PGraphics dynamicPerspective;
+import controlP5.*;
+
+final int VIEWPORT_WIDTH = 850;
+final int VIEWPORT_HEIGHT = 850;
+final int VIEWPORT_MARGIN = 20;
+final int CAMERA_DISTANCE = 200;
+
+PGraphics sceneOne;
+PGraphics sceneTwo;
+PGraphics sceneThree;
 
 Box boxOne;
 Box boxTwo;
 boolean isOccluding = true;
-float angleDelta = radians(5);
+
+ControlP5 cp5;
 
 FileNamer fileNamer;
 
 void setup() {
-  size(800, 800, P3D);
-  perspectiveOne = createGraphics(width, height, P3D);
-  perspectiveTwo = createGraphics(width, height, P3D);
-  homePerspective = createGraphics(width, height, P3D);
-  dynamicPerspective = createGraphics(width, height, P3D);
+  size(1440, 850, P3D);
 
+  sceneOne = createGraphics(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, P3D);
+  sceneTwo = createGraphics(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, P3D);
+  sceneThree = createGraphics(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, P3D);
+
+  setupUi();
   reset();
 
   fileNamer = new FileNamer("output/export", "png");
+}
+
+void setupUi() {
+  final int uiMargin = 18;
+  final int left = VIEWPORT_WIDTH + VIEWPORT_MARGIN;
+  final int right = width - VIEWPORT_MARGIN;
+
+  final int labelColWidth = 70;
+  final int lockColWidth = 64;
+  final int yawPitchColWidth = floor((right - left - labelColWidth - lockColWidth) / 2);
+  final int yawPitchColInnerWidth = yawPitchColWidth - 2 * uiMargin;
+
+  final int labelColLeft = left + uiMargin;
+  final int yawColLeft = left + labelColWidth + uiMargin;
+  final int pitchColLeft = left + labelColWidth + yawPitchColWidth + uiMargin;
+  final int lockColLeft = left + labelColWidth + yawPitchColWidth * 2 + uiMargin;
+  final int rowHeight = 32;
+  final int sliderHeight = 18;
+  final int toggleSize = 18;
+  final int labelOffsetY = 5;
+
+  cp5 = new ControlP5(this);
+  int currY = VIEWPORT_MARGIN;
+
+  cp5.addLabel("yaw").setPosition(yawColLeft, currY);
+  cp5.addLabel("pitch").setPosition(pitchColLeft, currY);
+  cp5.addLabel("lock").setPosition(lockColLeft, currY);
+  currY += rowHeight;
+
+  cp5.addLabel("box 1").setPosition(labelColLeft, currY + labelOffsetY);
+
+  cp5.addSlider("boxOneYaw")
+    .setLabel("")
+    .setPosition(yawColLeft, currY)
+    .setSize(yawPitchColInnerWidth, sliderHeight)
+    .setRange(0, 360)
+    .setValue(0);
+
+  cp5.addSlider("boxOnePitch")
+    .setLabel("")
+    .setPosition(pitchColLeft, currY)
+    .setSize(yawPitchColInnerWidth, sliderHeight)
+    .setRange(0, 360)
+    .setValue(7.5);
+  currY += rowHeight;
+
+  cp5.addLabel("view 1").setPosition(labelColLeft, currY + labelOffsetY);
+
+  cp5.addSlider("viewOneYaw")
+    .setLabel("")
+    .setPosition(yawColLeft, currY)
+    .setSize(yawPitchColInnerWidth, sliderHeight)
+    .setRange(0, 360)
+    .setValue(0);
+
+  cp5.addSlider("viewOnePitch")
+    .setLabel("")
+    .setPosition(pitchColLeft, currY)
+    .setSize(yawPitchColInnerWidth, sliderHeight)
+    .setRange(0, 360)
+    .setValue(0);
+
+  cp5.addToggle("viewOneLock")
+    .setLabel("")
+    .setPosition(lockColLeft, currY)
+    .setSize(toggleSize, toggleSize)
+    .setValue(true);
+  currY += rowHeight;
+
+  currY += rowHeight;
+
+  cp5.addLabel("box 2").setPosition(labelColLeft, currY + labelOffsetY);
+
+  cp5.addSlider("boxTwoYaw")
+    .setLabel("")
+    .setPosition(yawColLeft, currY)
+    .setSize(yawPitchColInnerWidth, sliderHeight)
+    .setRange(0, 360)
+    .setValue(145);
+
+  cp5.addSlider("boxTwoPitch")
+    .setLabel("")
+    .setPosition(pitchColLeft, currY)
+    .setSize(yawPitchColInnerWidth, sliderHeight)
+    .setRange(0, 360)
+    .setValue(22.5);
+  currY += rowHeight;
+
+  cp5.addLabel("view 2").setPosition(labelColLeft, currY + labelOffsetY);
+
+  cp5.addSlider("viewTwoYaw")
+    .setLabel("")
+    .setPosition(yawColLeft, currY)
+    .setSize(yawPitchColInnerWidth, sliderHeight)
+    .setRange(0, 360)
+    .setValue(0);
+
+  cp5.addSlider("viewTwoPitch")
+    .setLabel("")
+    .setPosition(pitchColLeft, currY)
+    .setSize(yawPitchColInnerWidth, sliderHeight)
+    .setRange(0, 360)
+    .setValue(7);
+
+  cp5.addToggle("viewTwoLock")
+    .setLabel("")
+    .setPosition(lockColLeft, currY)
+    .setSize(toggleSize, toggleSize)
+    .setValue(true);
+  currY += rowHeight;
+
+  currY += rowHeight;
+
+  cp5.addLabel("view 3").setPosition(labelColLeft, currY + labelOffsetY);
+
+  cp5.addSlider("viewThreeYaw")
+    .setLabel("")
+    .setPosition(yawColLeft, currY)
+    .setSize(yawPitchColInnerWidth, sliderHeight)
+    .setRange(0, 360)
+    .setValue(0);
+
+  cp5.addSlider("viewThreePitch")
+    .setLabel("")
+    .setPosition(pitchColLeft, currY)
+    .setSize(yawPitchColInnerWidth, sliderHeight)
+    .setRange(0, 360)
+    .setValue(0);
+  currY += rowHeight;
+
+  cp5.addLabel("rotisserie\nspeed").setPosition(labelColLeft, currY + labelOffsetY);
+
+  cp5.addSlider("viewThreeYawDelta")
+    .setLabel("")
+    .setPosition(yawColLeft, currY)
+    .setSize(yawPitchColInnerWidth, sliderHeight)
+    .setRange(0, 30)
+    .setValue(2);
 }
 
 void reset() {
@@ -28,29 +174,60 @@ void reset() {
 }
 
 void draw() {
-  float r = 200;
-  drawScene(perspectiveOne, boxOne, boxTwo, "boxOne");
-  drawScene(perspectiveTwo, boxOne, boxTwo, "boxTwo");
-  drawScene(homePerspective, boxOne, boxTwo, new PVector(r, 0, 0));
+  drawSceneOne();
+  drawSceneTwo();
+  drawSceneThree();
 
-  float a = mouseXToAngle(mouseX);
-  PVector cameraPos = new PVector(r * cos(a), 0, r * sin(a));
-  drawScene(dynamicPerspective, boxOne, boxTwo, cameraPos);
+  background(24);
 
-  background(50);
-  image(perspectiveOne, 0, 0, width/2, height/2);
-  image(perspectiveTwo, width/2, 0, width/2, height/2);
-  image(homePerspective, 0, height/2, width/2, height/2);
-  image(dynamicPerspective, width/2, height/2, width/2, height/2);
+  image(sceneOne, 0, 0, VIEWPORT_WIDTH/2, VIEWPORT_HEIGHT/2);
+  image(sceneTwo, VIEWPORT_WIDTH/2, 0, VIEWPORT_WIDTH/2, VIEWPORT_HEIGHT/2);
+  image(sceneThree, 0, VIEWPORT_HEIGHT/2, VIEWPORT_WIDTH/2, VIEWPORT_HEIGHT/2);
+
+  final int labelOffsetX = 12;
+  final int labelOffsetY = 24;
+  text("view 1", labelOffsetX, labelOffsetY);
+  text("view 2", VIEWPORT_WIDTH/2 + labelOffsetX, labelOffsetY);
+  text("view 3", labelOffsetX, VIEWPORT_HEIGHT/2 + labelOffsetY);
+  text("overhead", VIEWPORT_WIDTH/2 + labelOffsetX, VIEWPORT_HEIGHT/2 + labelOffsetY);
 }
 
-float mouseXToAngle(float v) {
-  return map(mouseX, 0, width, 0, TWO_PI);
+void drawSceneOne() {
+  boxOne.yaw = radians(cp5.getController("boxOneYaw").getValue());
+  boxOne.pitch = radians(cp5.getController("boxOnePitch").getValue());
+  if (cp5.getController("viewOneLock").getValue() != 0) {
+    drawScene(sceneOne, boxOne, boxTwo, "boxOne");
+  } else {
+    float yaw = radians(cp5.getController("viewOneYaw").getValue());
+    float pitch = radians(cp5.getController("viewOnePitch").getValue());
+    PVector cameraPos = getCameraPosFromYawPitch(yaw, pitch);
+    drawScene(sceneOne, boxOne, boxTwo, cameraPos);
+  }
 }
 
-void drawScene(PGraphics g, Box boxOne, Box boxTwo, String perspective) {
+void drawSceneTwo() {
+  boxTwo.yaw = radians(cp5.getController("boxTwoYaw").getValue());
+  boxTwo.pitch = radians(cp5.getController("boxTwoPitch").getValue());
+  if (cp5.getController("viewTwoLock").getValue() != 0) {
+    drawScene(sceneTwo, boxOne, boxTwo, "boxTwo");
+  } else {
+    float yaw = radians(cp5.getController("viewTwoYaw").getValue());
+    float pitch = radians(cp5.getController("viewTwoPitch").getValue());
+    PVector cameraPos = getCameraPosFromYawPitch(yaw, pitch);
+    drawScene(sceneTwo, boxOne, boxTwo, cameraPos);
+  }
+}
+
+void drawSceneThree() {
+  float yaw = radians(cp5.getController("viewThreeYaw").getValue());
+  float pitch = radians(cp5.getController("viewThreePitch").getValue());
+  PVector cameraPos = getCameraPosFromYawPitch(yaw, pitch);
+  drawScene(sceneThree, boxOne, boxTwo, cameraPos);
+}
+
+void drawScene(PGraphics g, Box boxOne, Box boxTwo, String scene) {
   PVector cameraPos;
-  switch (perspective) {
+  switch (scene) {
     case "boxOne":
       cameraPos = getCameraPosFromBox(boxOne);
       break;
@@ -61,6 +238,11 @@ void drawScene(PGraphics g, Box boxOne, Box boxTwo, String perspective) {
       cameraPos = new PVector(200, 0, 50);
   }
   drawScene(g, boxOne, boxTwo, cameraPos);
+}
+
+PVector getCameraPosFromYawPitch(float yaw, float pitch) {
+  // TODO: Implement get camera pos from yaw pitch.
+  return new PVector(CAMERA_DISTANCE * cos(yaw), 0, CAMERA_DISTANCE * sin(yaw));
 }
 
 PVector getCameraPosFromBox(Box box) {
@@ -106,30 +288,24 @@ void drawScene(PGraphics g, Box boxOne, Box boxTwo, PVector cameraPos) {
   g.endDraw();
 }
 
-void mouseReleased() {
-  println("View angle:", degrees(mouseXToAngle(mouseX)));
+void controlEvent(ControlEvent theEvent) {
+  println("got a control event from controller with id "+theEvent.getController().getId());
+  
+  if (theEvent.isFrom(cp5.getController("viewOneLock"))) {
+    boolean isLocked = cp5.getController("viewOneLock").getValue() != 0;
+    cp5.getController("viewOneYaw").setVisible(!isLocked);
+    cp5.getController("viewOnePitch").setVisible(!isLocked);
+  } else if (theEvent.isFrom(cp5.getController("viewTwoLock"))) {
+    boolean isLocked = cp5.getController("viewTwoLock").getValue() != 0;
+    cp5.getController("viewTwoYaw").setVisible(!isLocked);
+    cp5.getController("viewTwoPitch").setVisible(!isLocked);
+  }
 }
 
 void keyReleased() {
   switch (key) {
     case 'e':
       reset();
-      break;
-    case 'j':
-      boxTwo.pitch -= angleDelta;
-      println("yaw:", degrees(boxTwo.yaw), "pitch:", degrees(boxTwo.pitch));
-      break;
-    case 'k':
-      boxTwo.pitch += angleDelta;
-      println("yaw:", degrees(boxTwo.yaw), "pitch:", degrees(boxTwo.pitch));
-      break;
-    case 'h':
-      boxTwo.yaw -= angleDelta;
-      println("yaw:", degrees(boxTwo.yaw), "pitch:", degrees(boxTwo.pitch));
-      break;
-    case 'l':
-      boxTwo.yaw += angleDelta;
-      println("yaw:", degrees(boxTwo.yaw), "pitch:", degrees(boxTwo.pitch));
       break;
     case 'o':
       isOccluding = !isOccluding;
