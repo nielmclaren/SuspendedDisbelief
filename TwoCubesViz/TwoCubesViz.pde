@@ -295,10 +295,18 @@ void controlEvent(ControlEvent theEvent) {
     boolean isLocked = cp5.getController("viewOneLock").getValue() != 0;
     cp5.getController("viewOneYaw").setVisible(!isLocked);
     cp5.getController("viewOnePitch").setVisible(!isLocked);
+    if (!isLocked) {
+      cp5.getController("viewOneYaw").setValue(cp5.getController("boxOneYaw").getValue());
+      cp5.getController("viewOnePitch").setValue(cp5.getController("boxOnePitch").getValue());
+    }
   } else if (theEvent.isFrom(cp5.getController("viewTwoLock"))) {
     boolean isLocked = cp5.getController("viewTwoLock").getValue() != 0;
     cp5.getController("viewTwoYaw").setVisible(!isLocked);
     cp5.getController("viewTwoPitch").setVisible(!isLocked);
+    if (!isLocked) {
+      cp5.getController("viewTwoYaw").setValue(cp5.getController("boxTwoYaw").getValue());
+      cp5.getController("viewTwoPitch").setValue(cp5.getController("boxTwoPitch").getValue());
+    }
   }
 }
 
