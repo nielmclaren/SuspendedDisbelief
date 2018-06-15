@@ -4,10 +4,13 @@ final int VIEWPORT_WIDTH = 850;
 final int VIEWPORT_HEIGHT = 850;
 final int VIEWPORT_MARGIN = 20;
 final int CAMERA_DISTANCE = 200;
+final int OVERHEAD_CAMERA_DISTANCE = 500;
+final int MARKER_SIZE = 20;
 
 PGraphics sceneOne;
 PGraphics sceneTwo;
 PGraphics sceneThree;
+PGraphics sceneOverhead;
 
 Box boxOne;
 Box boxTwo;
@@ -24,6 +27,7 @@ void setup() {
   sceneOne = createGraphics(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, P3D);
   sceneTwo = createGraphics(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, P3D);
   sceneThree = createGraphics(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, P3D);
+  sceneOverhead = createGraphics(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, P3D);
 
   setupUi();
   reset();
@@ -51,6 +55,8 @@ void setupUi() {
   final int labelOffsetY = 5;
 
   cp5 = new ControlP5(this);
+  cp5.setAutoDraw(false);
+
   int currY = VIEWPORT_MARGIN;
 
   cp5.addLabel("yaw").setPosition(yawColLeft, currY);
@@ -71,7 +77,7 @@ void setupUi() {
     .setLabel("")
     .setPosition(pitchColLeft, currY)
     .setSize(yawPitchColInnerWidth, sliderHeight)
-    .setRange(0, 360)
+    .setRange(-89, 89)
     .setValue(7.5);
   currY += rowHeight;
 
@@ -88,7 +94,7 @@ void setupUi() {
     .setLabel("")
     .setPosition(pitchColLeft, currY)
     .setSize(yawPitchColInnerWidth, sliderHeight)
-    .setRange(0, 360)
+    .setRange(-89, 89)
     .setValue(0);
 
   cp5.addToggle("viewOneLock")
@@ -113,7 +119,7 @@ void setupUi() {
     .setLabel("")
     .setPosition(pitchColLeft, currY)
     .setSize(yawPitchColInnerWidth, sliderHeight)
-    .setRange(0, 360)
+    .setRange(-89, 89)
     .setValue(22.5);
   currY += rowHeight;
 
@@ -130,7 +136,7 @@ void setupUi() {
     .setLabel("")
     .setPosition(pitchColLeft, currY)
     .setSize(yawPitchColInnerWidth, sliderHeight)
-    .setRange(0, 360)
+    .setRange(-89, 89)
     .setValue(7);
 
   cp5.addToggle("viewTwoLock")
@@ -155,7 +161,7 @@ void setupUi() {
     .setLabel("")
     .setPosition(pitchColLeft, currY)
     .setSize(yawPitchColInnerWidth, sliderHeight)
-    .setRange(0, 360)
+    .setRange(-89, 89)
     .setValue(0);
   currY += rowHeight;
 
@@ -176,16 +182,20 @@ void reset() {
 }
 
 void draw() {
-  stepViewThree();
+  stepSceneOne();
+  stepSceneTwo();
+  stepSceneThree();
   drawSceneOne();
   drawSceneTwo();
   drawSceneThree();
+  drawSceneOverhead();
 
   background(24);
 
   image(sceneOne, 0, 0, VIEWPORT_WIDTH/2, VIEWPORT_HEIGHT/2);
   image(sceneTwo, VIEWPORT_WIDTH/2, 0, VIEWPORT_WIDTH/2, VIEWPORT_HEIGHT/2);
   image(sceneThree, 0, VIEWPORT_HEIGHT/2, VIEWPORT_WIDTH/2, VIEWPORT_HEIGHT/2);
+  image(sceneOverhead, VIEWPORT_WIDTH/2, VIEWPORT_HEIGHT/2, VIEWPORT_WIDTH/2, VIEWPORT_HEIGHT/2);
 
   final int labelOffsetX = 12;
   final int labelOffsetY = 24;
@@ -193,81 +203,107 @@ void draw() {
   text("view 2", VIEWPORT_WIDTH/2 + labelOffsetX, labelOffsetY);
   text("view 3", labelOffsetX, VIEWPORT_HEIGHT/2 + labelOffsetY);
   text("overhead", VIEWPORT_WIDTH/2 + labelOffsetX, VIEWPORT_HEIGHT/2 + labelOffsetY);
+
+  cp5.draw();
 }
 
-void stepViewThree() {
+void stepSceneOne() {
+  boxOne.yaw = radians(cp5.getController("boxOneYaw").getValue());
+  boxOne.pitch = radians(cp5.getController("boxOnePitch").getValue());
+}
+
+void stepSceneTwo() {
+  boxTwo.yaw = radians(cp5.getController("boxTwoYaw").getValue());
+  boxTwo.pitch = radians(cp5.getController("boxTwoPitch").getValue());
+}
+
+void stepSceneThree() {
   viewThreeYawOffset += radians(cp5.getController("viewThreeYawDelta").getValue());
 }
 
 void drawSceneOne() {
-  boxOne.yaw = radians(cp5.getController("boxOneYaw").getValue());
-  boxOne.pitch = radians(cp5.getController("boxOnePitch").getValue());
+  PVector cameraPos = getSceneOneCameraPos();
+  drawScene(sceneOne, cameraPos, false);
+}
+
+PVector getSceneOneCameraPos() {
   if (cp5.getController("viewOneLock").getValue() != 0) {
-    drawScene(sceneOne, boxOne, boxTwo, "boxOne");
-  } else {
-    float yaw = radians(cp5.getController("viewOneYaw").getValue());
-    float pitch = radians(cp5.getController("viewOnePitch").getValue());
-    PVector cameraPos = getCameraPosFromYawPitch(yaw, pitch);
-    drawScene(sceneOne, boxOne, boxTwo, cameraPos);
+    return getCameraPosFromBox(boxOne);
   }
+
+  float yaw = radians(cp5.getController("viewOneYaw").getValue());
+  float pitch = radians(cp5.getController("viewOnePitch").getValue());
+  return getCameraPosFromYawPitch(yaw, pitch);
 }
 
 void drawSceneTwo() {
-  boxTwo.yaw = radians(cp5.getController("boxTwoYaw").getValue());
-  boxTwo.pitch = radians(cp5.getController("boxTwoPitch").getValue());
+  PVector cameraPos = getSceneTwoCameraPos();
+  drawScene(sceneTwo, cameraPos, false);
+}
+
+PVector getSceneTwoCameraPos() {
   if (cp5.getController("viewTwoLock").getValue() != 0) {
-    drawScene(sceneTwo, boxOne, boxTwo, "boxTwo");
-  } else {
-    float yaw = radians(cp5.getController("viewTwoYaw").getValue());
-    float pitch = radians(cp5.getController("viewTwoPitch").getValue());
-    PVector cameraPos = getCameraPosFromYawPitch(yaw, pitch);
-    drawScene(sceneTwo, boxOne, boxTwo, cameraPos);
+    return getCameraPosFromBox(boxTwo);
   }
+
+  float yaw = radians(cp5.getController("viewTwoYaw").getValue());
+  float pitch = radians(cp5.getController("viewTwoPitch").getValue());
+  return getCameraPosFromYawPitch(yaw, pitch);
 }
 
 void drawSceneThree() {
-  float yaw = viewThreeYawOffset + radians(cp5.getController("viewThreeYaw").getValue());
-  float pitch = radians(cp5.getController("viewThreePitch").getValue());
-  PVector cameraPos = getCameraPosFromYawPitch(yaw, pitch);
-  drawScene(sceneThree, boxOne, boxTwo, cameraPos);
+  PVector cameraPos = getSceneThreeCameraPos();
+  drawScene(sceneThree, cameraPos, false);
 }
 
-void drawScene(PGraphics g, Box boxOne, Box boxTwo, String scene) {
-  PVector cameraPos;
-  switch (scene) {
-    case "boxOne":
-      cameraPos = getCameraPosFromBox(boxOne);
-      break;
-    case "boxTwo":
-      cameraPos = getCameraPosFromBox(boxTwo);
-      break;
-    default:
-      cameraPos = new PVector(200, 0, 50);
-  }
-  drawScene(g, boxOne, boxTwo, cameraPos);
+PVector getSceneThreeCameraPos() {
+  float yaw = viewThreeYawOffset + radians(cp5.getController("viewThreeYaw").getValue());
+  float pitch = radians(cp5.getController("viewThreePitch").getValue());
+  return getCameraPosFromYawPitch(yaw, pitch);
+}
+
+void drawSceneOverhead() {
+  PVector cameraPos = new PVector(0, OVERHEAD_CAMERA_DISTANCE, 0);
+  drawScene(sceneOverhead, cameraPos, true);
 }
 
 PVector getCameraPosFromYawPitch(float yaw, float pitch) {
-  // TODO: Implement get camera pos from yaw pitch.
-  return new PVector(CAMERA_DISTANCE * cos(yaw), 0, CAMERA_DISTANCE * sin(yaw));
-}
-
-PVector getCameraPosFromBox(Box box) {
-  float r = 200;
   PVector result = new PVector();
 
   PMatrix3D m = new PMatrix3D();
-  m.rotate(box.yaw, 0, 1, 0);
-  m.rotate(box.pitch, 1, 0, 0);
-  m.mult(new PVector(0, r, 0), result);
+  m.rotate(yaw, 0, 1, 0);
+  m.rotate(pitch, 0, 0, 1);
+  m.mult(new PVector(CAMERA_DISTANCE, 0, 0), result);
 
   return result;
 }
 
-void drawScene(PGraphics g, Box boxOne, Box boxTwo, PVector cameraPos) {
+PVector getCameraPosFromBox(Box box) {
+  return getCameraPosFromYawPitch(box.yaw, box.pitch);
+}
+
+void drawScene(PGraphics g, PVector cameraPos, boolean displayOverheadAnnotations) {
   g.beginDraw();
   g.background(0);
-  g.camera(cameraPos.x, cameraPos.y, cameraPos.z, 0, 0, 0, 0, 1, 0);
+  if (cameraPos.x == 0 && cameraPos.z == 0) {
+    g.camera(cameraPos.x, cameraPos.y, cameraPos.z, 0, 0, 0, 0, 0, 1);
+  } else {
+    g.camera(cameraPos.x, cameraPos.y, cameraPos.z, 0, 0, 0, 0, 1, 0);
+  }
+
+  if (displayOverheadAnnotations) {
+    drawOverheadAnnotations(g);
+  }
+
+  // Draw the origin
+  float r = 50;
+  g.noFill();
+  g.stroke(255, 0, 0);
+  g.line(0, 0, 0, r, 0, 0);
+  g.stroke(0, 255, 0);
+  g.line(0, 0, 0, 0, r, 0);
+  g.stroke(0, 0, 255);
+  g.line(0, 0, 0, 0, 0, r);
 
   if (isOccluding) {
     g.fill(0);
@@ -295,8 +331,53 @@ void drawScene(PGraphics g, Box boxOne, Box boxTwo, PVector cameraPos) {
   g.endDraw();
 }
 
+void drawOverheadAnnotations(PGraphics g) {
+  PVector boxOneCameraPos = getCameraPosFromBox(boxOne);
+  PVector boxTwoCameraPos = getCameraPosFromBox(boxTwo);
+  PVector sceneOneCameraPos = getSceneOneCameraPos();
+  PVector sceneTwoCameraPos = getSceneTwoCameraPos();
+
+  // Background circle
+  float radius = 1.7 * CAMERA_DISTANCE;
+  g.strokeWeight(3);
+  g.stroke(64);
+  g.fill(32);
+  g.pushMatrix();
+  g.translate(0, -CAMERA_DISTANCE, 0);
+  g.rotateX(PI/2);
+  g.ellipseMode(RADIUS);
+  g.ellipse(0, 0, radius, radius);
+  g.popMatrix();
+
+  // Box and camera positions
+  g.stroke(192);
+  g.rectMode(CENTER);
+  drawLineAndMarker(g, boxOneCameraPos, "rect");
+  drawLineAndMarker(g, boxTwoCameraPos, "rect");
+  drawLineAndMarker(g, sceneOneCameraPos, "ellipse");
+  drawLineAndMarker(g, sceneTwoCameraPos, "ellipse");
+}
+
+void drawLineAndMarker(PGraphics g, PVector pos, String markerType) {
+  g.line(0, 0, 0, pos.x, pos.y, pos.z);
+  g.pushMatrix();
+  g.translate(pos.x, pos.y, pos.z);
+  g.rotateX(PI/2);
+
+  switch (markerType) {
+    case "rect":
+      g.rect(0, 0, MARKER_SIZE, MARKER_SIZE);
+      break;
+    case "ellipse":
+      g.ellipse(0, 0, MARKER_SIZE, MARKER_SIZE);
+      break;
+  }
+
+  g.popMatrix();
+}
+
 void controlEvent(ControlEvent theEvent) {
-  println("got a control event from controller with id "+theEvent.getController().getId());
+  println("got a control event from controller with id " + theEvent.getController().getId());
   
   if (theEvent.isFrom(cp5.getController("viewOneLock"))) {
     boolean isLocked = cp5.getController("viewOneLock").getValue() != 0;
