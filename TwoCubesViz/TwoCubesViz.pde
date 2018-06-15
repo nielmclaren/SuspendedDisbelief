@@ -14,7 +14,6 @@ PGraphics sceneOverhead;
 
 Box boxOne;
 Box boxTwo;
-boolean isOccluding = true;
 float viewThreeYawOffset;
 
 ControlP5 cp5;
@@ -165,14 +164,41 @@ void setupUi() {
     .setValue(0);
   currY += rowHeight;
 
-  cp5.addLabel("rotisserie\nspeed").setPosition(labelColLeft, currY + labelOffsetY);
+  cp5.addLabel("rotisserie").setPosition(labelColLeft, currY + labelOffsetY);
+
+  cp5.addToggle("isRotisserieEnabled")
+    .setLabel("")
+    .setPosition(yawColLeft, currY)
+    .setSize(toggleSize, toggleSize)
+    .setValue(true);
 
   cp5.addSlider("viewThreeYawDelta")
     .setLabel("")
-    .setPosition(yawColLeft, currY)
-    .setSize(yawPitchColInnerWidth, sliderHeight)
+    .setPosition(yawColLeft + toggleSize + uiMargin, currY)
+    .setSize(2 * yawPitchColWidth - toggleSize - uiMargin - 2 * uiMargin, sliderHeight)
     .setRange(0, 3)
     .setValue(0.2);
+  currY += rowHeight;
+
+  currY += rowHeight;
+
+  cp5.addLabel("occlusion").setPosition(labelColLeft, currY + labelOffsetY);
+
+  cp5.addToggle("isOccluded")
+    .setLabel("")
+    .setPosition(yawColLeft, currY)
+    .setSize(toggleSize, toggleSize)
+    .setValue(true);
+  currY += rowHeight;
+
+  cp5.addLabel("draw origin").setPosition(labelColLeft, currY + labelOffsetY);
+
+  cp5.addToggle("displayOrigin")
+    .setLabel("")
+    .setPosition(yawColLeft, currY)
+    .setSize(toggleSize, toggleSize)
+    .setValue(false);
+  currY += rowHeight;
 }
 
 void reset() {
@@ -218,7 +244,9 @@ void stepSceneTwo() {
 }
 
 void stepSceneThree() {
-  viewThreeYawOffset += radians(cp5.getController("viewThreeYawDelta").getValue());
+  if (cp5.getController("isRotisserieEnabled").getValue() != 0) {
+    viewThreeYawOffset += radians(cp5.getController("viewThreeYawDelta").getValue());
+  }
 }
 
 void drawSceneOne() {
@@ -296,16 +324,18 @@ void drawScene(PGraphics g, PVector cameraPos, boolean displayOverheadAnnotation
   }
 
   // Draw the origin
-  float r = 50;
-  g.noFill();
-  g.stroke(255, 0, 0);
-  g.line(0, 0, 0, r, 0, 0);
-  g.stroke(0, 255, 0);
-  g.line(0, 0, 0, 0, r, 0);
-  g.stroke(0, 0, 255);
-  g.line(0, 0, 0, 0, 0, r);
+  if (cp5.getController("displayOrigin").getValue() != 0) {
+    float r = 80;
+    g.noFill();
+    g.stroke(255, 0, 0);
+    g.line(0, 0, 0, r, 0, 0);
+    g.stroke(0, 255, 0);
+    g.line(0, 0, 0, 0, r, 0);
+    g.stroke(0, 0, 255);
+    g.line(0, 0, 0, 0, 0, r);
+  }
 
-  if (isOccluding) {
+  if (cp5.getController("isOccluded").getValue() != 0) {
     g.fill(0);
   }   else {
     g.noFill();
@@ -402,9 +432,6 @@ void keyReleased() {
   switch (key) {
     case 'e':
       reset();
-      break;
-    case 'o':
-      isOccluding = !isOccluding;
       break;
     case 'r':
       save(savePath(fileNamer.next()));
