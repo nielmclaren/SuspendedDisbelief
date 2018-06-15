@@ -53,9 +53,13 @@ void setupUi() {
   final int toggleSize = 18;
   final int labelOffsetY = 5;
 
+  final int buttonWidth = 80;
+  final int buttonHeight = 24;
+
   cp5 = new ControlP5(this);
   cp5.setAutoDraw(false);
 
+  int currX = 0;
   int currY = VIEWPORT_MARGIN;
 
   cp5.addLabel("yaw").setPosition(yawColLeft, currY);
@@ -199,6 +203,26 @@ void setupUi() {
     .setSize(toggleSize, toggleSize)
     .setValue(false);
   currY += rowHeight;
+
+  currY += rowHeight;
+
+  currX = yawColLeft;
+  cp5.addButton("defaultSettings")
+    .setLabel("defaults")
+    .setPosition(currX, currY)
+    .setSize(buttonWidth, buttonHeight);
+  currX += buttonWidth + uiMargin;
+
+  cp5.addButton("loadSettings")
+    .setLabel("load")
+    .setPosition(currX, currY)
+    .setSize(buttonWidth, buttonHeight);
+  currX += buttonWidth + uiMargin;
+
+  cp5.addButton("saveSettings")
+    .setLabel("save")
+    .setPosition(currX, currY)
+    .setSize(buttonWidth, buttonHeight);
 }
 
 void reset() {
@@ -404,6 +428,73 @@ void drawLineAndMarker(PGraphics g, PVector pos, String markerType) {
   }
 
   g.popMatrix();
+}
+
+void defaultSettings() {
+  loadSettingsFromFile("defaultSettings.json");
+}
+
+void loadSettings() {
+  loadSettingsFromFile("settings.json");
+}
+
+void loadSettingsFromFile(String filename) {
+  JSONObject json = loadJSONObject(filename);
+  loadJSONFloat(json, "boxOneYaw");
+  loadJSONFloat(json, "boxOnePitch");
+  loadJSONFloat(json, "viewOneYaw");
+  loadJSONFloat(json, "viewOnePitch");
+  loadJSONBoolean(json, "viewOneLock");
+  loadJSONFloat(json, "boxTwoYaw");
+  loadJSONFloat(json, "boxTwoPitch");
+  loadJSONFloat(json, "viewTwoYaw");
+  loadJSONFloat(json, "viewTwoPitch");
+  loadJSONBoolean(json, "viewTwoLock");
+  loadJSONFloat(json, "viewThreeYaw");
+  loadJSONFloat(json, "viewThreePitch");
+  loadJSONBoolean(json, "isRotisserieEnabled");
+  loadJSONFloat(json, "viewThreeYawDelta");
+  loadJSONBoolean(json, "isOccluded");
+  loadJSONBoolean(json, "displayOrigin");
+}
+
+void loadJSONBoolean(JSONObject json, String controllerName) {
+  cp5.getController(controllerName).setValue(json.getBoolean(controllerName) ? 1 : 0);
+}
+
+void loadJSONFloat(JSONObject json, String controllerName) {
+  cp5.getController(controllerName).setValue(json.getFloat(controllerName));
+}
+
+void saveSettings() {
+  JSONObject json = new JSONObject();
+
+  setJSONFloat(json, "boxOneYaw");
+  setJSONFloat(json, "boxOnePitch");
+  setJSONFloat(json, "viewOneYaw");
+  setJSONFloat(json, "viewOnePitch");
+  setJSONBoolean(json, "viewOneLock");
+  setJSONFloat(json, "boxTwoYaw");
+  setJSONFloat(json, "boxTwoPitch");
+  setJSONFloat(json, "viewTwoYaw");
+  setJSONFloat(json, "viewTwoPitch");
+  setJSONBoolean(json, "viewTwoLock");
+  setJSONFloat(json, "viewThreeYaw");
+  setJSONFloat(json, "viewThreePitch");
+  setJSONBoolean(json, "isRotisserieEnabled");
+  setJSONFloat(json, "viewThreeYawDelta");
+  setJSONBoolean(json, "isOccluded");
+  setJSONBoolean(json, "displayOrigin");
+
+  saveJSONObject(json, "settings.json");
+}
+
+void setJSONBoolean(JSONObject json, String controllerName) {
+  json.setBoolean(controllerName, cp5.getController(controllerName).getValue() != 0);
+}
+
+void setJSONFloat(JSONObject json, String controllerName) {
+  json.setFloat(controllerName, cp5.getController(controllerName).getValue());
 }
 
 void controlEvent(ControlEvent theEvent) {
