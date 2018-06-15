@@ -12,6 +12,7 @@ PGraphics sceneThree;
 Box boxOne;
 Box boxTwo;
 boolean isOccluding = true;
+float viewThreeYawOffset;
 
 ControlP5 cp5;
 
@@ -164,16 +165,18 @@ void setupUi() {
     .setLabel("")
     .setPosition(yawColLeft, currY)
     .setSize(yawPitchColInnerWidth, sliderHeight)
-    .setRange(0, 30)
-    .setValue(2);
+    .setRange(0, 3)
+    .setValue(0.2);
 }
 
 void reset() {
   boxOne = new Box(100, 0, radians(7.5));
   boxTwo = new Box(100, radians(145), radians(22.5));
+  viewThreeYawOffset = 0;
 }
 
 void draw() {
+  stepViewThree();
   drawSceneOne();
   drawSceneTwo();
   drawSceneThree();
@@ -190,6 +193,10 @@ void draw() {
   text("view 2", VIEWPORT_WIDTH/2 + labelOffsetX, labelOffsetY);
   text("view 3", labelOffsetX, VIEWPORT_HEIGHT/2 + labelOffsetY);
   text("overhead", VIEWPORT_WIDTH/2 + labelOffsetX, VIEWPORT_HEIGHT/2 + labelOffsetY);
+}
+
+void stepViewThree() {
+  viewThreeYawOffset += radians(cp5.getController("viewThreeYawDelta").getValue());
 }
 
 void drawSceneOne() {
@@ -219,7 +226,7 @@ void drawSceneTwo() {
 }
 
 void drawSceneThree() {
-  float yaw = radians(cp5.getController("viewThreeYaw").getValue());
+  float yaw = viewThreeYawOffset + radians(cp5.getController("viewThreeYaw").getValue());
   float pitch = radians(cp5.getController("viewThreePitch").getValue());
   PVector cameraPos = getCameraPosFromYawPitch(yaw, pitch);
   drawScene(sceneThree, boxOne, boxTwo, cameraPos);
