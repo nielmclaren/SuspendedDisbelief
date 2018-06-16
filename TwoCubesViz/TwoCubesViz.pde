@@ -30,6 +30,7 @@ void setup() {
 
   setupUi();
   reset();
+  loadSettings();
 
   fileNamer = new FileNamer("output/export", "png");
 }
@@ -260,6 +261,14 @@ void setupUi() {
 
   cp5.addButton("saveSettings")
     .setLabel("save")
+    .setPosition(currX, currY)
+    .setSize(buttonWidth, buttonHeight);
+  currX += buttonWidth + uiMargin;
+
+  currX += buttonWidth + uiMargin;
+
+  cp5.addButton("exportImages")
+    .setLabel("export")
     .setPosition(currX, currY)
     .setSize(buttonWidth, buttonHeight);
 }
@@ -544,6 +553,24 @@ void setJSONBoolean(JSONObject json, String controllerName) {
 
 void setJSONFloat(JSONObject json, String controllerName) {
   json.setFloat(controllerName, cp5.getController(controllerName).getValue());
+}
+
+void exportImages() {
+  boolean prevIsOccluded = cp5.getController("isOccluded").getValue() != 0;
+  cp5.getController("isOccluded").setValue(0);
+
+  PGraphics scene = createGraphics(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, P3D);
+  PVector cameraPos;
+  
+  cameraPos = getSceneOneCameraPos();
+  drawScene(scene, cameraPos, false);
+  scene.save("sceneOne.png");
+
+  cameraPos = getSceneTwoCameraPos();
+  drawScene(scene, cameraPos, false);
+  scene.save("sceneTwo.png");
+
+  cp5.getController("isOccluded").setValue(prevIsOccluded ? 1 : 0);
 }
 
 void controlEvent(ControlEvent theEvent) {
