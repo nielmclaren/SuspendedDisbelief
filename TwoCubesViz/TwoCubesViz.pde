@@ -39,15 +39,6 @@ void setupUi() {
   final int left = VIEWPORT_WIDTH + VIEWPORT_MARGIN;
   final int right = width - VIEWPORT_MARGIN;
 
-  final int labelColWidth = 70;
-  final int lockColWidth = 64;
-  final int yawPitchColWidth = floor((right - left - labelColWidth - lockColWidth) / 2);
-  final int yawPitchColInnerWidth = yawPitchColWidth - 2 * uiMargin;
-
-  final int labelColLeft = left + uiMargin;
-  final int yawColLeft = left + labelColWidth + uiMargin;
-  final int pitchColLeft = left + labelColWidth + yawPitchColWidth + uiMargin;
-  final int lockColLeft = left + labelColWidth + yawPitchColWidth * 2 + uiMargin;
   final int rowHeight = 32;
   final int sliderHeight = 18;
   final int toggleSize = 18;
@@ -55,6 +46,17 @@ void setupUi() {
 
   final int buttonWidth = 80;
   final int buttonHeight = 24;
+
+  final int labelColWidth = 70;
+  final int lockColWidth = 64;
+  final int yawPitchColWidth = floor((right - left - labelColWidth - lockColWidth) / 2);
+  final int yawPitchColInnerWidth = yawPitchColWidth - 2 * uiMargin;
+  final int twoColInnerWidth = 2 * yawPitchColWidth - toggleSize - uiMargin - 2 * uiMargin;
+
+  final int labelColLeft = left + uiMargin;
+  final int yawColLeft = left + labelColWidth + uiMargin;
+  final int pitchColLeft = left + labelColWidth + yawPitchColWidth + uiMargin;
+  final int lockColLeft = left + labelColWidth + yawPitchColWidth * 2 + uiMargin;
 
   cp5 = new ControlP5(this);
   cp5.setAutoDraw(false);
@@ -179,7 +181,7 @@ void setupUi() {
   cp5.addSlider("viewThreeYawDelta")
     .setLabel("")
     .setPosition(yawColLeft + toggleSize + uiMargin, currY)
-    .setSize(2 * yawPitchColWidth - toggleSize - uiMargin - 2 * uiMargin, sliderHeight)
+    .setSize(twoColInnerWidth, sliderHeight)
     .setRange(0, 3)
     .setValue(0.2);
   currY += rowHeight;
@@ -206,6 +208,31 @@ void setupUi() {
 
   currY += rowHeight;
 
+  cp5.addLabel("size").setPosition(yawColLeft, currY);
+  currY += rowHeight;
+  
+  cp5.addLabel("box 1").setPosition(labelColLeft, currY + labelOffsetY);
+
+  cp5.addSlider("boxOneSize")
+    .setLabel("")
+    .setPosition(yawColLeft, currY)
+    .setSize(twoColInnerWidth, sliderHeight)
+    .setRange(0, 150)
+    .setValue(100);
+  currY += rowHeight;
+  
+  cp5.addLabel("box 2").setPosition(labelColLeft, currY + labelOffsetY);
+
+  cp5.addSlider("boxTwoSize")
+    .setLabel("")
+    .setPosition(yawColLeft, currY)
+    .setSize(twoColInnerWidth, sliderHeight)
+    .setRange(0, 150)
+    .setValue(100);
+  currY += rowHeight;
+
+  currY += rowHeight;
+  
   currX = yawColLeft;
   cp5.addButton("defaultSettings")
     .setLabel("defaults")
@@ -226,8 +253,8 @@ void setupUi() {
 }
 
 void reset() {
-  boxOne = new Box(100, 0, radians(7.5));
-  boxTwo = new Box(100, radians(145), radians(22.5));
+  boxOne = new Box(90, 0, radians(7.5));
+  boxTwo = new Box(110, radians(145), radians(22.5));
   viewThreeYawOffset = 0;
 }
 
@@ -258,11 +285,13 @@ void draw() {
 }
 
 void stepSceneOne() {
+  boxOne.size = cp5.getController("boxOneSize").getValue();
   boxOne.yaw = radians(cp5.getController("boxOneYaw").getValue());
   boxOne.pitch = radians(cp5.getController("boxOnePitch").getValue());
 }
 
 void stepSceneTwo() {
+  boxTwo.size = cp5.getController("boxTwoSize").getValue();
   boxTwo.yaw = radians(cp5.getController("boxTwoYaw").getValue());
   boxTwo.pitch = radians(cp5.getController("boxTwoPitch").getValue());
 }
@@ -456,6 +485,8 @@ void loadSettingsFromFile(String filename) {
   loadJSONFloat(json, "viewThreeYawDelta");
   loadJSONBoolean(json, "isOccluded");
   loadJSONBoolean(json, "displayOrigin");
+  loadJSONFloat(json, "boxOneSize");
+  loadJSONFloat(json, "boxTwoSize");
 }
 
 void loadJSONBoolean(JSONObject json, String controllerName) {
@@ -485,6 +516,8 @@ void saveSettings() {
   setJSONFloat(json, "viewThreeYawDelta");
   setJSONBoolean(json, "isOccluded");
   setJSONBoolean(json, "displayOrigin");
+  setJSONFloat(json, "boxOneSize");
+  setJSONFloat(json, "boxTwoSize");
 
   saveJSONObject(json, "settings.json");
 }

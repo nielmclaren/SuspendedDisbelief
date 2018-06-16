@@ -14,5 +14,7 @@
   "viewTwoPitch": 7,
   "displayOrigin": false,
   "boxTwoPitch": 22.50000762939453,
-  "viewThreeYaw": 0
+  "viewThreeYaw": 0,
+  "boxOneSize": 75,
+  "boxTwoSize": 100
 }
