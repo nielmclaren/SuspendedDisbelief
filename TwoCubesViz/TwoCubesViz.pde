@@ -211,7 +211,7 @@ void setupUi() {
   cp5.addLabel("size").setPosition(yawColLeft, currY);
   currY += rowHeight;
   
-  cp5.addLabel("boxOneSizeLabel").setLabel("box 1").setPosition(labelColLeft, currY + labelOffsetY);
+  cp5.addLabel("boxOneSizeLabel").setText("box 1").setPosition(labelColLeft, currY + labelOffsetY);
 
   cp5.addSlider("boxOneSize")
     .setLabel("")
@@ -221,7 +221,7 @@ void setupUi() {
     .setValue(100);
   currY += rowHeight;
   
-  cp5.addLabel("boxTwoSizeLabel").setLabel("box 2").setPosition(labelColLeft, currY + labelOffsetY);
+  cp5.addLabel("boxTwoSizeLabel").setText("box 2").setPosition(labelColLeft, currY + labelOffsetY);
 
   cp5.addSlider("boxTwoSize")
     .setLabel("")
