@@ -71,9 +71,15 @@ void setupUi() {
 
   cp5.addLabel("box 1").setPosition(labelColLeft, currY + labelOffsetY);
 
-  cp5.addSlider("boxOneYaw")
+  cp5.addToggle("boxOneEnabled")
     .setLabel("")
     .setPosition(yawColLeft, currY)
+    .setSize(toggleSize, toggleSize)
+    .setValue(true);
+
+  cp5.addSlider("boxOneYaw")
+    .setLabel("")
+    .setPosition(yawColLeft + toggleSize + uiMargin, currY)
     .setSize(yawPitchColInnerWidth, sliderHeight)
     .setRange(0, 360)
     .setValue(0);
@@ -113,9 +119,15 @@ void setupUi() {
 
   cp5.addLabel("box 2").setPosition(labelColLeft, currY + labelOffsetY);
 
-  cp5.addSlider("boxTwoYaw")
+  cp5.addToggle("boxTwoEnabled")
     .setLabel("")
     .setPosition(yawColLeft, currY)
+    .setSize(toggleSize, toggleSize)
+    .setValue(true);
+
+  cp5.addSlider("boxTwoYaw")
+    .setLabel("")
+    .setPosition(yawColLeft + toggleSize + uiMargin, currY)
     .setSize(yawPitchColInnerWidth, sliderHeight)
     .setRange(0, 360)
     .setValue(145);
@@ -396,19 +408,23 @@ void drawScene(PGraphics g, PVector cameraPos, boolean displayOverheadAnnotation
   g.strokeWeight(5);
   g.pushMatrix();
 
-  g.pushMatrix();
-  g.stroke(#7effdb);
-  g.rotateY(boxOne.yaw);
-  g.rotateZ(boxOne.pitch);
-  g.box(boxOne.size);
-  g.popMatrix();
+  if (cp5.getController("boxOneEnabled").getValue() != 0) {
+    g.pushMatrix();
+    g.stroke(#7effdb);
+    g.rotateY(boxOne.yaw);
+    g.rotateZ(boxOne.pitch);
+    g.box(boxOne.size);
+    g.popMatrix();
+  }
 
-  g.pushMatrix();
-  g.stroke(#b693fe);
-  g.rotateY(boxTwo.yaw);
-  g.rotateZ(boxTwo.pitch);
-  g.box(boxTwo.size);
-  g.popMatrix();
+  if (cp5.getController("boxTwoEnabled").getValue() != 0) {
+    g.pushMatrix();
+    g.stroke(#b693fe);
+    g.rotateY(boxTwo.yaw);
+    g.rotateZ(boxTwo.pitch);
+    g.box(boxTwo.size);
+    g.popMatrix();
+  }
 
   g.popMatrix();
   g.endDraw();
