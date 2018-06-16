@@ -370,14 +370,14 @@ void drawScene(PGraphics g, PVector cameraPos, boolean displayOverheadAnnotation
   g.pushMatrix();
   g.stroke(#7effdb);
   g.rotateY(boxOne.yaw);
-  g.rotateX(boxOne.pitch);
+  g.rotateZ(boxOne.pitch);
   g.box(boxOne.size);
   g.popMatrix();
 
   g.pushMatrix();
   g.stroke(#b693fe);
   g.rotateY(boxTwo.yaw);
-  g.rotateX(boxTwo.pitch);
+  g.rotateZ(boxTwo.pitch);
   g.box(boxTwo.size);
   g.popMatrix();
 
