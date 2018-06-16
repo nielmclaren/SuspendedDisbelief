@@ -211,7 +211,7 @@ void setupUi() {
   cp5.addLabel("size").setPosition(yawColLeft, currY);
   currY += rowHeight;
   
-  cp5.addLabel("box 1").setPosition(labelColLeft, currY + labelOffsetY);
+  cp5.addLabel("boxOneSizeLabel").setLabel("box 1").setPosition(labelColLeft, currY + labelOffsetY);
 
   cp5.addSlider("boxOneSize")
     .setLabel("")
@@ -221,7 +221,7 @@ void setupUi() {
     .setValue(100);
   currY += rowHeight;
   
-  cp5.addLabel("box 2").setPosition(labelColLeft, currY + labelOffsetY);
+  cp5.addLabel("boxTwoSizeLabel").setLabel("box 2").setPosition(labelColLeft, currY + labelOffsetY);
 
   cp5.addSlider("boxTwoSize")
     .setLabel("")
@@ -469,16 +469,16 @@ void loadSettings() {
 
 void loadSettingsFromFile(String filename) {
   JSONObject json = loadJSONObject(filename);
+  loadJSONBoolean(json, "viewOneLock");
   loadJSONFloat(json, "boxOneYaw");
   loadJSONFloat(json, "boxOnePitch");
   loadJSONFloat(json, "viewOneYaw");
   loadJSONFloat(json, "viewOnePitch");
-  loadJSONBoolean(json, "viewOneLock");
+  loadJSONBoolean(json, "viewTwoLock");
   loadJSONFloat(json, "boxTwoYaw");
   loadJSONFloat(json, "boxTwoPitch");
   loadJSONFloat(json, "viewTwoYaw");
   loadJSONFloat(json, "viewTwoPitch");
-  loadJSONBoolean(json, "viewTwoLock");
   loadJSONFloat(json, "viewThreeYaw");
   loadJSONFloat(json, "viewThreePitch");
   loadJSONBoolean(json, "isRotisserieEnabled");
