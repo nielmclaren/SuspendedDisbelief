@@ -5,6 +5,7 @@ final int VIEWPORT_MARGIN = 20;
 final int CAMERA_DISTANCE = 200;
 
 PGraphics scene;
+PGraphics projection;
 Box box;
 
 FileNamer fileNamer;
@@ -13,6 +14,7 @@ void setup() {
   size(1440, 850, P3D);
 
   scene = createGraphics(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, P3D);
+  projection = createGraphics(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, P3D);
   box = new Box(100, 0, 0);
 
   fileNamer = new FileNamer("output/export", "png");
@@ -22,8 +24,11 @@ void draw() {
   background(24);
 
   PVector cameraPos = getCameraPos();
-  drawScene(scene, cameraPos);
+  drawScene(scene, cameraPos, box);
+  drawProjection(projection, cameraPos, box);
+
   image(scene, 0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
+  image(projection, 0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
 }
 
 PVector getCameraPos() {
@@ -43,7 +48,10 @@ PVector getCameraPosFromYawPitch(float yaw, float pitch) {
   return result;
 }
 
-void drawScene(PGraphics g, PVector cameraPos) {
+void drawScene(PGraphics g, PVector cameraPos, Box box) {
+  box.yaw = map(mouseX, 0, width, 0, TWO_PI);
+  box.pitch = map(mouseY, 0, height, -PI/2, PI/2);
+
   g.beginDraw();
   g.background(0);
 
@@ -71,6 +79,34 @@ void drawScene(PGraphics g, PVector cameraPos) {
   g.rotateZ(box.pitch);
   g.box(box.size);
   g.popMatrix();
+
+  g.pushMatrix();
+  PVector[] points = box.getPoints();
+  for (int i = 0; i < points.length; i++) {
+    drawPoint(g, cameraPos, points[i]);
+  }
+  g.popMatrix();
+
+  g.endDraw();
+}
+
+void drawPoint(PGraphics g, PVector cameraPos, PVector point) {
+  g.pushStyle();
+  g.pushMatrix();
+  g.translate(point.x, point.y, point.z);
+  g.strokeWeight(1);
+  g.sphereDetail(9);
+  g.sphere(10);
+  g.popMatrix();
+  g.popStyle();
+}
+
+void drawProjection(PGraphics g, PVector cameraPos, Box box) {
+  g.beginDraw();
+  g.background(0, 0);
+
+  g.stroke(255, 0, 0);
+  g.line(-50, 0, 75, 150);
 
   g.endDraw();
 }
