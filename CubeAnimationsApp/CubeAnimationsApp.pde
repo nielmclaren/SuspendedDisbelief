@@ -11,6 +11,7 @@ boolean isPerspectiveOne;
 Box boxOne;
 Box boxTwo;
 
+BoxDrawer drawer;
 ControlP5 cp5;
 
 JSONObject settingsJson;
@@ -22,6 +23,8 @@ void setup() {
 
   scene = createGraphics(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, P3D);
   isPerspectiveOne = true;
+
+  drawer = new BoxDrawer();
 
   setupUi();
   reset();
@@ -143,35 +146,15 @@ void drawScene(PGraphics g, PVector cameraPos) {
     g.camera(cameraPos.x, cameraPos.y, cameraPos.z, 0, 0, 0, 0, 1, 0);
   }
 
-  // Draw the origin
-  if (settingsJson.getBoolean("displayOrigin")) {
-    float r = 80;
-    g.noFill();
-    g.stroke(255, 0, 0);
-    g.line(0, 0, 0, r, 0, 0);
-    g.stroke(0, 255, 0);
-    g.line(0, 0, 0, 0, r, 0);
-    g.stroke(0, 0, 255);
-    g.line(0, 0, 0, 0, 0, r);
-  }
-
   g.noFill();
   g.strokeWeight(5);
   g.pushMatrix();
 
-  g.pushMatrix();
   g.stroke(#7effdb);
-  g.rotateY(boxOne.yaw);
-  g.rotateZ(boxOne.pitch);
-  g.box(boxOne.size);
-  g.popMatrix();
+  drawer.drawBox(g, boxOne);
 
-  g.pushMatrix();
   g.stroke(#b693fe);
-  g.rotateY(boxTwo.yaw);
-  g.rotateZ(boxTwo.pitch);
-  g.box(boxTwo.size);
-  g.popMatrix();
+  drawer.drawOpposingFaces(g, boxTwo, floor(map(mouseX, 0, width, 0, 6)));
 
   g.popMatrix();
   g.endDraw();
