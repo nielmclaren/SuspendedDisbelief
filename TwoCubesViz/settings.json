@@ -4,7 +4,7 @@
   "viewThreeYawDelta": 0.13081395626068115,
   "viewOneLock": false,
   "viewOnePitch": 7.2441864013671875,
-  "isOccluded": true,
+  "isOccluded": false,
   "boxOnePitch": -21.732559204101562,
   "boxOneSize": 112.06394958496094,
   "boxTwoSize": 118.60465240478516,

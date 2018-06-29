@@ -3,6 +3,8 @@ import controlP5.*;
 final int VIEWPORT_WIDTH = 850;
 final int VIEWPORT_HEIGHT = 850;
 final int VIEWPORT_MARGIN = 20;
+final int EXPORT_WIDTH = 2400;
+final int EXPORT_HEIGHT = 2400;
 final int CAMERA_DISTANCE = 200;
 final int OVERHEAD_CAMERA_DISTANCE = 500;
 final int MARKER_SIZE = 20;
@@ -429,6 +431,7 @@ void drawScene(PGraphics g, PVector cameraPos, boolean displayOverheadAnnotation
   if (cp5.getController("boxTwoEnabled").getValue() != 0) {
     g.pushMatrix();
     g.stroke(#b693fe);
+    //g.stroke(#7effdb);
     g.rotateY(boxTwo.yaw);
     g.rotateZ(boxTwo.pitch);
     g.box(boxTwo.size);
@@ -557,20 +560,37 @@ void setJSONFloat(JSONObject json, String controllerName) {
 
 void exportImages() {
   boolean prevIsOccluded = cp5.getController("isOccluded").getValue() != 0;
-  cp5.getController("isOccluded").setValue(0);
-
-  PGraphics scene = createGraphics(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, P3D);
   PVector cameraPos;
   
+  cp5.getController("isOccluded").setValue(0);
+
   cameraPos = getSceneOneCameraPos();
-  drawScene(scene, cameraPos, false);
-  scene.save("sceneOne.png");
+  exportScene(cameraPos, "sceneOne.png");
 
   cameraPos = getSceneTwoCameraPos();
-  drawScene(scene, cameraPos, false);
-  scene.save("sceneTwo.png");
+  exportScene(cameraPos, "sceneTwo.png");
+
+  cp5.getController("isOccluded").setValue(1);
+
+  cameraPos = getSceneOneCameraPos();
+  exportScene(cameraPos, "sceneOne-occluded.png");
+
+  cameraPos = getSceneTwoCameraPos();
+  exportScene(cameraPos, "sceneTwo-occluded.png");
 
   cp5.getController("isOccluded").setValue(prevIsOccluded ? 1 : 0);
+}
+
+void exportScene(PVector cameraPos, String filename) {
+  PGraphics scene = createGraphics(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, P3D);
+  PGraphics export = createGraphics(EXPORT_WIDTH, EXPORT_HEIGHT, P3D);
+  drawScene(scene, cameraPos, false);
+  export.beginDraw();
+  export.background(0);
+  export.imageMode(CENTER);
+  export.image(scene, EXPORT_WIDTH/2, EXPORT_HEIGHT/2);
+  export.endDraw();
+  export.save(filename);
 }
 
 void controlEvent(ControlEvent theEvent) {
