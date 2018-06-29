@@ -1,0 +1,20 @@
+{
+  "viewTwoLock": true,
+  "isRotisserieEnabled": true,
+  "viewThreeYawDelta": 0.20000001788139343,
+  "viewOneLock": true,
+  "viewOnePitch": 0,
+  "isOccluded": true,
+  "boxOnePitch": 7.5,
+  "boxTwoYaw": 145,
+  "viewThreePitch": 0,
+  "viewTwoYaw": 0,
+  "boxOneYaw": 0,
+  "viewOneYaw": 0,
+  "viewTwoPitch": 7,
+  "displayOrigin": false,
+  "boxTwoPitch": 22.50000762939453,
+  "viewThreeYaw": 0,
+  "boxOneSize": 75,
+  "boxTwoSize": 100
+}
