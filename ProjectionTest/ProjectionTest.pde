@@ -61,6 +61,8 @@ void drawScene(PGraphics g, PVector cameraPos, Box box) {
     g.camera(cameraPos.x, cameraPos.y, cameraPos.z, 0, 0, 0, 0, 1, 0);
   }
 
+  g.printCamera();
+
   // Draw the origin
   float r = 80;
   g.stroke(255, 0, 0);
@@ -109,6 +111,14 @@ void drawProjection(PGraphics g, PVector cameraPos, Box box) {
   g.line(-50, 0, 75, 150);
 
   g.endDraw();
+}
+
+PMatrix3D getCameraMatrix() {
+  return new PMatrix3D(
+      -000.3827,  000.0000, -000.9239,  000.0000,
+      -000.1206,  000.9914,  000.0500, -000.0000,
+      000.9160,  000.1305, -000.3794, -200.0000,
+      000.0000,  000.0000,  000.0000,  001.0000);
 }
 
 void keyReleased() {
