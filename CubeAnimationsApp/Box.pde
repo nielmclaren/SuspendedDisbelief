@@ -89,16 +89,16 @@ class Box {
     return 8;
   }
 
-  PVector getVertexPoint(int vertexIndex) {
-    return getPoint(floor(vertexIndex / 4.) % 2 * 2 - 1, floor(vertexIndex / 2.) % 2 * 2 - 1, vertexIndex % 2 * 2 - 1);
+  PVector getVertexPoint(int vertex) {
+    return getPoint(floor(vertex / 4.) % 2 * 2 - 1, floor(vertex / 2.) % 2 * 2 - 1, vertex % 2 * 2 - 1);
   }
 
-  int getRandomVertexIndex() {
+  int getRandomVertex() {
     return floor(random(getNumVertices()));
   }
 
-  int[] getAdjacentVertexIndices(int vertexIndex) {
-    switch (vertexIndex) {
+  int[] getAdjacentVertices(int vertex) {
+    switch (vertex) {
       case 0: return new int[]{ 1, 2, 4 };
       case 1: return new int[]{ 0, 3, 5 };
       case 2: return new int[]{ 0, 3, 6 };
@@ -112,18 +112,18 @@ class Box {
     }
   }
 
-  int getRandomAdjacentVertexIndex(int vertexIndex) {
-    int[] indices = getAdjacentVertexIndices(vertexIndex);
+  int getRandomAdjacentVertex(int vertex) {
+    int[] indices = getAdjacentVertices(vertex);
     return indices[floor(random(indices.length))];
   }
 
-  int[] getAdjacentVertexIndicesExcept(int vertexIndex, int exceptIndex) {
-    int[] indices = getAdjacentVertexIndices(vertexIndex);
+  int[] getAdjacentVerticesExcept(int vertex, int exceptIndex) {
+    int[] indices = getAdjacentVertices(vertex);
     return ArrayUtils.removeElement(indices, exceptIndex);
   }
 
-  int getRandomAdjacentVertexIndexExcept(int vertexIndex, int exceptIndex) {
-    int[] indices = getAdjacentVertexIndicesExcept(vertexIndex, exceptIndex);
+  int getRandomAdjacentVertexExcept(int vertex, int exceptIndex) {
+    int[] indices = getAdjacentVerticesExcept(vertex, exceptIndex);
     return indices[floor(random(indices.length))];
   }
 

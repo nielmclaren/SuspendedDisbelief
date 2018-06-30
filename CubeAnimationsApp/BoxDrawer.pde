@@ -55,8 +55,8 @@ class BoxDrawer {
     }
   }
 
-  void drawVertex(PGraphics g, Box box, int vertexIndex) {
-    PVector vertexPoint = box.getVertexPoint(vertexIndex);
+  void drawVertex(PGraphics g, Box box, int vertex) {
+    PVector vertexPoint = box.getVertexPoint(vertex);
     g.pushMatrix();
     g.translate(vertexPoint.x, vertexPoint.y, vertexPoint.z);
     g.sphereDetail(9);
@@ -64,12 +64,12 @@ class BoxDrawer {
     g.popMatrix();
   }
 
-  void drawVertexLabel(PGraphics g, Box box, int vertexIndex) {
-    PVector vertexPoint = box.getVertexPoint(vertexIndex);
+  void drawVertexLabel(PGraphics g, Box box, int vertex) {
+    PVector vertexPoint = box.getVertexPoint(vertex);
 
     g.pushMatrix();
     g.translate(vertexPoint.x, vertexPoint.y, vertexPoint.z);
-    g.text(vertexIndex, 0, 0);
+    g.text(vertex, 0, 0);
     g.popMatrix();
   }
 
