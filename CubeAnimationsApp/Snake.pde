@@ -35,15 +35,29 @@ class Snake {
   }
 
   PVector getStartPoint() {
-    PVector p0 = box.getVertexPoint(vertices.get(0));
-    PVector p1 = box.getVertexPoint(vertices.get(1));
+    PVector p0 = getVertexPoint(vertices.get(0));
+    PVector p1 = getVertexPoint(vertices.get(1));
     return getPoint(p0, p1, start);
   }
 
   PVector getEndPoint() {
-    PVector p0 = box.getVertexPoint(getSecondLastVertex());
-    PVector p1 = box.getVertexPoint(getLastVertex());
+    PVector p0 = getVertexPoint(getSecondLastVertex());
+    PVector p1 = getVertexPoint(getLastVertex());
     return getPoint(p0, p1, (start + length) % 1);
+  }
+
+  PVector[] getPoints() {
+    PVector[] result = new PVector[vertices.size()];
+    result[0] = getStartPoint();
+    for (int i = 1; i < vertices.size() - 1; i++) {
+      result[i] = getVertexPoint(vertices.get(i));
+    }
+    result[result.length - 1] = getEndPoint();
+    return result;
+  }
+
+  private PVector getVertexPoint(int vertex) {
+    return box.getVertexPoint(vertex);
   }
 
   private PVector getPoint(PVector p0, PVector p1, float t) {

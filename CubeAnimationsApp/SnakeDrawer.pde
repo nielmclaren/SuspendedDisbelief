@@ -1,9 +1,9 @@
 
 static class SnakeDrawer {
   static void draw(PGraphics g, Snake snake) {
-    PVector start = snake.getStartPoint();
-    PVector end = snake.getEndPoint();
-
-    GraphicsUtils.line(g, start, end);
+    PVector[] points = snake.getPoints();
+    for (int i = 0; i < points.length - 1; i++) {
+      GraphicsUtils.line(g, points[i], points[i + 1]);
+    }
   }
 }

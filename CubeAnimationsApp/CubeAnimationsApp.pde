@@ -75,7 +75,7 @@ void setupUi() {
 void reset() {
   boxOne = new Box(100, 0, radians(7.5));
   boxTwo = new Box(100, 0, radians(22.5));
-  snake = new Snake(boxOne, 0.3);
+  snake = new Snake(boxOne, 2.0);
 }
 
 void draw() {
@@ -157,7 +157,7 @@ void drawScene(PGraphics g, PVector cameraPos) {
   g.strokeWeight(5);
   g.stroke(#7effdb);
   SnakeDrawer.draw(g, snake);
-  snake.advance(0.01);
+  snake.advance(0.06);
 
   g.popMatrix();
   g.endDraw();
