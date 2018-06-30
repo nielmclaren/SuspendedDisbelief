@@ -150,8 +150,14 @@ void drawScene(PGraphics g, PVector cameraPos) {
   g.strokeWeight(5);
   g.pushMatrix();
 
-  g.stroke(#7effdb);
+  g.strokeWeight(2);
+  g.stroke(#333333);
   drawer.drawBox(g, boxOne);
+
+  g.strokeWeight(5);
+  g.stroke(#7effdb);
+  drawer.drawEdge(g, boxOne, floor(map(mouseY, 0, height, 0, 12)));
+  drawer.drawVertex(g, boxOne, floor(map(mouseX, 0, width, 0, 8)));
 
   g.stroke(#b693fe);
   drawer.drawOpposingFaces(g, boxTwo, floor(map(mouseX, 0, width, 0, 6)));

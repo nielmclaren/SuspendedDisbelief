@@ -29,6 +29,10 @@ class Box {
     return points;
   }
 
+  int getNumFaces() {
+    return 6;
+  }
+
   PVector [] getFacePoints(int faceIndex) {
     switch (faceIndex) {
       case 0: return getFacePoints(-1,  0,  0);
@@ -43,7 +47,7 @@ class Box {
   }
 
   // One of dx, dy, dz should be positive or negative one. Others must be zero.
-  PVector[] getFacePoints(int dx, int dy, int dz) {
+  private PVector[] getFacePoints(int dx, int dy, int dz) {
     if (dx != 0) {
       return new PVector[]{ getPoint(dx, -1, -1), getPoint(dx, -1, 1), getPoint(dx, 1, 1), getPoint(dx, 1, -1) };
     } else if (dy != 0) {
@@ -54,8 +58,41 @@ class Box {
     return null;
   }
 
+  int getNumEdges() {
+    return 12;
+  }
+
+  PVector[] getEdgePoints(int edgeIndex) {
+    switch (edgeIndex) {
+      case 0: return new PVector[]{ getVertexPoint(0), getVertexPoint(1) };
+      case 1: return new PVector[]{ getVertexPoint(2), getVertexPoint(3) };
+      case 2: return new PVector[]{ getVertexPoint(4), getVertexPoint(5) };
+      case 3: return new PVector[]{ getVertexPoint(6), getVertexPoint(7) };
+
+      case 4: return new PVector[]{ getVertexPoint(0), getVertexPoint(2) };
+      case 5: return new PVector[]{ getVertexPoint(1), getVertexPoint(3) };
+      case 6: return new PVector[]{ getVertexPoint(4), getVertexPoint(6) };
+      case 7: return new PVector[]{ getVertexPoint(5), getVertexPoint(7) };
+
+      case 8: return new PVector[]{ getVertexPoint(0), getVertexPoint(4) };
+      case 9: return new PVector[]{ getVertexPoint(1), getVertexPoint(5) };
+      case 10: return new PVector[]{ getVertexPoint(2), getVertexPoint(6) };
+      case 11: return new PVector[]{ getVertexPoint(3), getVertexPoint(7) };
+
+      default: return null;
+    }
+  }
+
+  int getNumVertices() {
+    return 8;
+  }
+
+  PVector getVertexPoint(int vertexIndex) {
+    return getPoint(floor(vertexIndex / 4.) % 2 * 2 - 1, floor(vertexIndex / 2.) % 2 * 2 - 1, vertexIndex % 2 * 2 - 1);
+  }
+
   // Each of dx, dy, dz should be positive or negative one.
-  PVector getPoint(int dx, int dy, int dz) {
+  private PVector getPoint(int dx, int dy, int dz) {
     PVector point = new PVector(dx * size/2, dy * size/2, dz * size/2);
     PVector result = new PVector();
 
