@@ -1,4 +1,6 @@
 
+import org.apache.commons.lang3.ArrayUtils;
+
 class Box {
   public float size;
   public float yaw;
@@ -89,6 +91,40 @@ class Box {
 
   PVector getVertexPoint(int vertexIndex) {
     return getPoint(floor(vertexIndex / 4.) % 2 * 2 - 1, floor(vertexIndex / 2.) % 2 * 2 - 1, vertexIndex % 2 * 2 - 1);
+  }
+
+  int getRandomVertexIndex() {
+    return floor(random(getNumVertices()));
+  }
+
+  int[] getAdjacentVertexIndices(int vertexIndex) {
+    switch (vertexIndex) {
+      case 0: return new int[]{ 1, 2, 4 };
+      case 1: return new int[]{ 0, 3, 5 };
+      case 2: return new int[]{ 0, 3, 6 };
+      case 3: return new int[]{ 1, 2, 7 };
+      case 4: return new int[]{ 0, 5, 6 };
+      case 5: return new int[]{ 1, 4, 7 };
+      case 6: return new int[]{ 2, 4, 7 };
+      case 7: return new int[]{ 3, 5, 6 };
+
+      default: return null;
+    }
+  }
+
+  int getRandomAdjacentVertexIndex(int vertexIndex) {
+    int[] indices = getAdjacentVertexIndices(vertexIndex);
+    return indices[floor(random(indices.length))];
+  }
+
+  int[] getAdjacentVertexIndicesExcept(int vertexIndex, int exceptIndex) {
+    int[] indices = getAdjacentVertexIndices(vertexIndex);
+    return ArrayUtils.removeElement(indices, exceptIndex);
+  }
+
+  int getRandomAdjacentVertexIndexExcept(int vertexIndex, int exceptIndex) {
+    int[] indices = getAdjacentVertexIndicesExcept(vertexIndex, exceptIndex);
+    return indices[floor(random(indices.length))];
   }
 
   // Each of dx, dy, dz should be positive or negative one.

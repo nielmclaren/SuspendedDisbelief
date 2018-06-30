@@ -39,6 +39,22 @@ class BoxDrawer {
     line(g, edgePoints[0], edgePoints[1]);
   }
 
+  void drawEdgeLabel(PGraphics g, Box box, int edgeIndex) {
+    PVector[] edgePoints = box.getEdgePoints(edgeIndex);
+    PVector midPoint = PVector.add(edgePoints[0], PVector.mult(PVector.sub(edgePoints[1], edgePoints[0]), 0.5));
+
+    g.pushMatrix();
+    g.translate(midPoint.x, midPoint.y, midPoint.z);
+    g.text(edgeIndex, 0, 0);
+    g.popMatrix();
+  }
+
+  void drawEdgeLabels(PGraphics g, Box box) {
+    for (int i = 0; i < 12; i++) {
+      drawEdgeLabel(g, box, i);
+    }
+  }
+
   void drawVertex(PGraphics g, Box box, int vertexIndex) {
     PVector vertexPoint = box.getVertexPoint(vertexIndex);
     g.pushMatrix();
@@ -46,6 +62,21 @@ class BoxDrawer {
     g.sphereDetail(9);
     g.sphere(5);
     g.popMatrix();
+  }
+
+  void drawVertexLabel(PGraphics g, Box box, int vertexIndex) {
+    PVector vertexPoint = box.getVertexPoint(vertexIndex);
+
+    g.pushMatrix();
+    g.translate(vertexPoint.x, vertexPoint.y, vertexPoint.z);
+    g.text(vertexIndex, 0, 0);
+    g.popMatrix();
+  }
+
+  void drawVertexLabels(PGraphics g, Box box) {
+    for (int i = 0; i < 8; i++) {
+      drawVertexLabel(g, box, i);
+    }
   }
 
   private void line(PGraphics g, PVector p0, PVector p1) {

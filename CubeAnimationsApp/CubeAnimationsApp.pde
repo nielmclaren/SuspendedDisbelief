@@ -11,6 +11,8 @@ boolean isPerspectiveOne;
 Box boxOne;
 Box boxTwo;
 
+Walker walker;
+
 BoxDrawer drawer;
 ControlP5 cp5;
 
@@ -76,6 +78,7 @@ void setupUi() {
 void reset() {
   boxOne = new Box(100, 0, radians(7.5));
   boxTwo = new Box(100, 0, radians(22.5));
+  walker = new Walker(boxOne);
 }
 
 void draw() {
@@ -159,8 +162,23 @@ void drawScene(PGraphics g, PVector cameraPos) {
   drawer.drawEdge(g, boxOne, floor(map(mouseY, 0, height, 0, 12)));
   drawer.drawVertex(g, boxOne, floor(map(mouseX, 0, width, 0, 8)));
 
+  g.noStroke();
+  g.fill(#7effdb);
+  drawer.drawEdgeLabels(g, boxOne);
+  g.fill(#b693fe);
+  drawer.drawVertexLabels(g, boxOne);
+
+  g.noFill();
   g.stroke(#b693fe);
   drawer.drawOpposingFaces(g, boxTwo, floor(map(mouseX, 0, width, 0, 6)));
+
+  PVector walkerPoint = walker.getPoint();
+  g.pushMatrix();
+  g.translate(walkerPoint.x, walkerPoint.y, walkerPoint.z);
+  g.sphereDetail(7);
+  g.sphere(10);
+  g.popMatrix();
+  walker.advance(0.08);
 
   g.popMatrix();
   g.endDraw();
