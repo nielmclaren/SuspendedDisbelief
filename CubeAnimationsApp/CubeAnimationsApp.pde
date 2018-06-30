@@ -13,7 +13,6 @@ Box boxTwo;
 
 Walker walker;
 
-BoxDrawer drawer;
 ControlP5 cp5;
 
 JSONObject settingsJson;
@@ -25,8 +24,6 @@ void setup() {
 
   scene = createGraphics(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, P3D);
   isPerspectiveOne = true;
-
-  drawer = new BoxDrawer();
 
   setupUi();
   reset();
@@ -155,22 +152,22 @@ void drawScene(PGraphics g, PVector cameraPos) {
 
   g.strokeWeight(2);
   g.stroke(#333333);
-  drawer.drawBox(g, boxOne);
+  BoxDrawer.drawBox(g, boxOne);
 
   g.strokeWeight(5);
   g.stroke(#7effdb);
-  drawer.drawEdge(g, boxOne, floor(map(mouseY, 0, height, 0, 12)));
-  drawer.drawVertex(g, boxOne, floor(map(mouseX, 0, width, 0, 8)));
+  BoxDrawer.drawEdge(g, boxOne, floor(map(mouseY, 0, height, 0, 12)));
+  BoxDrawer.drawVertex(g, boxOne, floor(map(mouseX, 0, width, 0, 8)));
 
   g.noStroke();
   g.fill(#7effdb);
-  drawer.drawEdgeLabels(g, boxOne);
+  BoxDrawer.drawEdgeLabels(g, boxOne);
   g.fill(#b693fe);
-  drawer.drawVertexLabels(g, boxOne);
+  BoxDrawer.drawVertexLabels(g, boxOne);
 
   g.noFill();
   g.stroke(#b693fe);
-  drawer.drawOpposingFaces(g, boxTwo, floor(map(mouseX, 0, width, 0, 6)));
+  BoxDrawer.drawOpposingFaces(g, boxTwo, floor(map(mouseX, 0, width, 0, 6)));
 
   PVector walkerPoint = walker.getPoint();
   g.pushMatrix();
