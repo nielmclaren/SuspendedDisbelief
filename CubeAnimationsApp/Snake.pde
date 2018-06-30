@@ -13,7 +13,15 @@ class Snake {
     int vertex = box.getRandomVertex();
     vertices = new ArrayList<Integer>();
     vertices.add(vertex);
-    vertices.add(box.getRandomAdjacentVertex(vertex));
+    updateVertices();
+  }
+
+  float getLength() {
+    return length;
+  }
+
+  void setLength(float v) {
+    length = v;
     updateVertices();
   }
 
@@ -29,9 +37,20 @@ class Snake {
   }
 
   private void updateVertices() {
-    while (vertices.size() < start + length + 1) {
-      vertices.add(box.getRandomAdjacentVertexExcept(getLastVertex(), getSecondLastVertex()));
+    int targetCount = ceil(start + length) + 1;
+    while (vertices.size() > targetCount) {
+      vertices.remove(vertices.size() - 1);
     }
+    while (vertices.size() < targetCount) {
+      vertices.add(generateNextVertex());
+    }
+  }
+
+  private int generateNextVertex() {
+    if (vertices.size() > 1) {
+      return box.getRandomAdjacentVertexExcept(getLastVertex(), getSecondLastVertex());
+    }
+    return box.getRandomAdjacentVertex(getLastVertex());
   }
 
   PVector getStartPoint() {

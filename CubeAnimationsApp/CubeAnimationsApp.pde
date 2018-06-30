@@ -158,6 +158,11 @@ void drawScene(PGraphics g, PVector cameraPos) {
   g.stroke(#7effdb);
   SnakeDrawer.draw(g, snake);
   snake.advance(0.06);
+  if (snake.getLength() <= 0.1) {
+    snake.setLength(4);
+  } else {
+    snake.setLength(snake.getLength() - 0.055);
+  }
 
   g.popMatrix();
   g.endDraw();
