@@ -11,7 +11,7 @@ boolean isPerspectiveOne;
 Box boxOne;
 Box boxTwo;
 
-Walker walker;
+Snake snake;
 
 ControlP5 cp5;
 
@@ -23,7 +23,7 @@ void setup() {
   size(1440, 850, P3D);
 
   scene = createGraphics(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, P3D);
-  isPerspectiveOne = true;
+  isPerspectiveOne = false;
 
   setupUi();
   reset();
@@ -75,7 +75,7 @@ void setupUi() {
 void reset() {
   boxOne = new Box(100, 0, radians(7.5));
   boxTwo = new Box(100, 0, radians(22.5));
-  walker = new Walker(boxOne);
+  snake = new Snake(boxOne, 0.3);
 }
 
 void draw() {
@@ -156,26 +156,8 @@ void drawScene(PGraphics g, PVector cameraPos) {
 
   g.strokeWeight(5);
   g.stroke(#7effdb);
-  BoxDrawer.drawEdge(g, boxOne, floor(map(mouseY, 0, height, 0, 12)));
-  BoxDrawer.drawVertex(g, boxOne, floor(map(mouseX, 0, width, 0, 8)));
-
-  g.noStroke();
-  g.fill(#7effdb);
-  BoxDrawer.drawEdgeLabels(g, boxOne);
-  g.fill(#b693fe);
-  BoxDrawer.drawVertexLabels(g, boxOne);
-
-  g.noFill();
-  g.stroke(#b693fe);
-  BoxDrawer.drawOpposingFaces(g, boxTwo, floor(map(mouseX, 0, width, 0, 6)));
-
-  PVector walkerPoint = walker.getPoint();
-  g.pushMatrix();
-  g.translate(walkerPoint.x, walkerPoint.y, walkerPoint.z);
-  g.sphereDetail(7);
-  g.sphere(10);
-  g.popMatrix();
-  walker.advance(0.08);
+  SnakeDrawer.draw(g, snake);
+  snake.advance(0.01);
 
   g.popMatrix();
   g.endDraw();
