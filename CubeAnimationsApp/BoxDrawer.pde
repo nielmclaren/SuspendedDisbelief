@@ -12,31 +12,31 @@ class BoxDrawer {
 
   void drawFace(PGraphics g, Box box, int faceIndex) {
     PVector[] facePoints = box.getFacePoints(faceIndex % 6);
-    line(g, facePoints[0], facePoints[1]);
-    line(g, facePoints[1], facePoints[2]);
-    line(g, facePoints[2], facePoints[3]);
-    line(g, facePoints[3], facePoints[0]);
+    GraphicsUtils.line(g, facePoints[0], facePoints[1]);
+    GraphicsUtils.line(g, facePoints[1], facePoints[2]);
+    GraphicsUtils.line(g, facePoints[2], facePoints[3]);
+    GraphicsUtils.line(g, facePoints[3], facePoints[0]);
   }
 
   void drawOpposingFaces(PGraphics g, Box box, int faceIndex) {
     PVector[] facePoints;
 
     facePoints = box.getFacePoints(floor(faceIndex / 2) * 2);
-    line(g, facePoints[0], facePoints[1]);
-    line(g, facePoints[1], facePoints[2]);
-    line(g, facePoints[2], facePoints[3]);
-    line(g, facePoints[3], facePoints[0]);
+    GraphicsUtils.line(g, facePoints[0], facePoints[1]);
+    GraphicsUtils.line(g, facePoints[1], facePoints[2]);
+    GraphicsUtils.line(g, facePoints[2], facePoints[3]);
+    GraphicsUtils.line(g, facePoints[3], facePoints[0]);
 
     facePoints = box.getFacePoints(floor(faceIndex / 2) * 2 + 1);
-    line(g, facePoints[0], facePoints[1]);
-    line(g, facePoints[1], facePoints[2]);
-    line(g, facePoints[2], facePoints[3]);
-    line(g, facePoints[3], facePoints[0]);
+    GraphicsUtils.line(g, facePoints[0], facePoints[1]);
+    GraphicsUtils.line(g, facePoints[1], facePoints[2]);
+    GraphicsUtils.line(g, facePoints[2], facePoints[3]);
+    GraphicsUtils.line(g, facePoints[3], facePoints[0]);
   }
 
   void drawEdge(PGraphics g, Box box, int edgeIndex) {
     PVector[] edgePoints = box.getEdgePoints(edgeIndex);
-    line(g, edgePoints[0], edgePoints[1]);
+    GraphicsUtils.line(g, edgePoints[0], edgePoints[1]);
   }
 
   void drawEdgeLabel(PGraphics g, Box box, int edgeIndex) {
@@ -77,9 +77,5 @@ class BoxDrawer {
     for (int i = 0; i < 8; i++) {
       drawVertexLabel(g, box, i);
     }
-  }
-
-  private void line(PGraphics g, PVector p0, PVector p1) {
-    g.line(p0.x, p0.y, p0.z, p1.x, p1.y, p1.z);
   }
 }
