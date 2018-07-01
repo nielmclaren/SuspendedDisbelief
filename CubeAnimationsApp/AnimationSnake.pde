@@ -20,6 +20,7 @@ class AnimationSnake implements IAnimation {
   }
 
   void draw(PGraphics g) {
+    g.noFill();
     g.strokeWeight(5);
     g.stroke(#7effdb, 255 * opacity);
     SnakeDrawer.draw(g, snake);

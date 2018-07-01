@@ -28,9 +28,7 @@ void setup() {
   setupUi();
   reset();
   loadSettings();
-
-  animations = new ArrayList<IAnimation>();
-  animations.add(new AnimationSnake(new Snake(boxOne, 2.0)));
+  setupAnimations();
 
   fileNamer = new FileNamer("output/export", "png");
 }
@@ -78,6 +76,12 @@ void setupUi() {
 void reset() {
   boxOne = new Box(100, 0, radians(7.5));
   boxTwo = new Box(100, 0, radians(22.5));
+}
+
+void setupAnimations() {
+  animations = new ArrayList<IAnimation>();
+  animations.add(new AnimationBaseCube(boxOne));
+  animations.add(new AnimationSnake(new Snake(boxOne, 2.0)));
 }
 
 void draw() {
@@ -150,29 +154,23 @@ PVector getCameraPosFromBox(Box box) {
 void drawScene(PGraphics g, PVector cameraPos) {
   g.beginDraw();
   g.background(0);
+
   if (cameraPos.x == 0 && cameraPos.z == 0) {
     g.camera(cameraPos.x, cameraPos.y, cameraPos.z, 0, 0, 0, 0, 0, 1);
   } else {
     g.camera(cameraPos.x, cameraPos.y, cameraPos.z, 0, 0, 0, 0, 1, 0);
   }
 
-  g.noFill();
-  g.strokeWeight(5);
-  g.pushMatrix();
-
-  g.strokeWeight(2);
-  g.stroke(#333333);
-  BoxDrawer.drawBox(g, boxOne);
-
   drawAnimations(g);
 
-  g.popMatrix();
   g.endDraw();
 }
 
 void drawAnimations(PGraphics g) {
   for (IAnimation animation : animations) {
+    g.pushStyle();
     animation.draw(g);
+    g.popStyle();
   }
 }
 
