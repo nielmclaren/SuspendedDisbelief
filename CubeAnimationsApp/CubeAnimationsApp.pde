@@ -11,7 +11,7 @@ boolean isPerspectiveOne;
 Box boxOne;
 Box boxTwo;
 
-Snake snake;
+ArrayList<IAnimation> animations;
 
 ControlP5 cp5;
 
@@ -28,6 +28,9 @@ void setup() {
   setupUi();
   reset();
   loadSettings();
+
+  animations = new ArrayList<IAnimation>();
+  animations.add(new AnimationSnake(new Snake(boxOne, 2.0)));
 
   fileNamer = new FileNamer("output/export", "png");
 }
@@ -75,10 +78,11 @@ void setupUi() {
 void reset() {
   boxOne = new Box(100, 0, radians(7.5));
   boxTwo = new Box(100, 0, radians(22.5));
-  snake = new Snake(boxOne, 2.0);
 }
 
 void draw() {
+  stepAnimations();
+
   if (isPerspectiveOne) {
     drawSceneOne();
   } else {
@@ -90,6 +94,12 @@ void draw() {
   image(scene, 0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
 
   cp5.draw();
+}
+
+void stepAnimations() {
+  for (IAnimation animation : animations) {
+    animation.step();
+  }
 }
 
 void drawSceneOne() {
@@ -154,18 +164,16 @@ void drawScene(PGraphics g, PVector cameraPos) {
   g.stroke(#333333);
   BoxDrawer.drawBox(g, boxOne);
 
-  g.strokeWeight(5);
-  g.stroke(#7effdb);
-  SnakeDrawer.draw(g, snake);
-  snake.advance(0.06);
-  if (snake.getLength() <= 0.1) {
-    snake.setLength(4);
-  } else {
-    snake.setLength(snake.getLength() - 0.055);
-  }
+  drawAnimations(g);
 
   g.popMatrix();
   g.endDraw();
+}
+
+void drawAnimations(PGraphics g) {
+  for (IAnimation animation : animations) {
+    animation.draw(g);
+  }
 }
 
 void defaultSettings() {
