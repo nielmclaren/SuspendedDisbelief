@@ -393,7 +393,7 @@ void drawScene(PGraphics g, PVector cameraPos, boolean displayOverheadAnnotation
   g.background(0);
 
   float cameraZ = (height/2.0) / tan(PI*60.0/360.0);
-  g.perspective(PI/3.0, width/height, 1, 1000000); //cameraZ/10.0, cameraZ*10.0);
+  g.perspective(PI/3.0, width/height, 1, 1000000);
 
   if (cameraPos.x == 0 && cameraPos.z == 0) {
     g.camera(cameraPos.x, cameraPos.y, cameraPos.z, 0, 0, 0, 0, 0, 1);
@@ -437,7 +437,6 @@ void drawScene(PGraphics g, PVector cameraPos, boolean displayOverheadAnnotation
   if (cp5.getController("boxTwoEnabled").getValue() != 0) {
     g.pushMatrix();
     g.stroke(#b693fe);
-    //g.stroke(#7effdb);
     g.rotateY(boxTwo.yaw);
     g.rotateZ(boxTwo.pitch);
     g.box(boxTwo.size);
