@@ -3,8 +3,8 @@ import controlP5.*;
 final int VIEWPORT_WIDTH = 850;
 final int VIEWPORT_HEIGHT = 850;
 final int VIEWPORT_MARGIN = 20;
-final int EXPORT_WIDTH = 2400;
-final int EXPORT_HEIGHT = 2400;
+final int EXPORT_WIDTH = 1920;
+final int EXPORT_HEIGHT = 1080;
 final int PADDED_EXPORT_WIDTH = 2400;
 final int PADDED_EXPORT_HEIGHT = 2400;
 final int CAMERA_DISTANCE = 200;
@@ -389,6 +389,12 @@ PVector getCameraPosFromBox(Box box) {
 }
 
 void drawScene(PGraphics g, PVector cameraPos, boolean displayOverheadAnnotations) {
+  boolean boxOneEnabled = cp5.getController("boxOneEnabled").getValue() != 0;
+  boolean boxTwoEnabled = cp5.getController("boxTwoEnabled").getValue() != 0;
+  drawScene(g, cameraPos, boxOneEnabled, boxTwoEnabled, displayOverheadAnnotations);
+}
+
+void drawScene(PGraphics g, PVector cameraPos, boolean boxOneEnabled, boolean boxTwoEnabled, boolean displayOverheadAnnotations) {
   g.beginDraw();
   g.background(0);
 
@@ -425,7 +431,7 @@ void drawScene(PGraphics g, PVector cameraPos, boolean displayOverheadAnnotation
   g.strokeWeight(32);
   g.pushMatrix();
 
-  if (cp5.getController("boxOneEnabled").getValue() != 0) {
+  if (boxOneEnabled) {
     g.pushMatrix();
     g.stroke(#7effdb);
     g.rotateY(boxOne.yaw);
@@ -434,7 +440,7 @@ void drawScene(PGraphics g, PVector cameraPos, boolean displayOverheadAnnotation
     g.popMatrix();
   }
 
-  if (cp5.getController("boxTwoEnabled").getValue() != 0) {
+  if (boxTwoEnabled) {
     g.pushMatrix();
     g.stroke(#b693fe);
     g.rotateY(boxTwo.yaw);
@@ -564,44 +570,34 @@ void setJSONFloat(JSONObject json, String controllerName) {
 }
 
 void exportImages() {
-  boolean prevIsOccluded = cp5.getController("isOccluded").getValue() != 0;
-  PVector cameraPos;
-  
-  cp5.getController("isOccluded").setValue(0);
-
-  cameraPos = getSceneOneCameraPos();
-  exportScene(cameraPos, "sceneOne.png", EXPORT_WIDTH, EXPORT_HEIGHT, EXPORT_WIDTH, EXPORT_HEIGHT);
-
-  cameraPos = getSceneTwoCameraPos();
-  exportScene(cameraPos, "sceneTwo.png", EXPORT_WIDTH, EXPORT_HEIGHT, EXPORT_WIDTH, EXPORT_HEIGHT);
-
-  cameraPos = getSceneOneCameraPos();
-  exportScene(cameraPos, "sceneOne-padded.png", VIEWPORT_WIDTH, VIEWPORT_HEIGHT, PADDED_EXPORT_WIDTH, PADDED_EXPORT_HEIGHT);
-
-  cameraPos = getSceneTwoCameraPos();
-  exportScene(cameraPos, "sceneTwo-padded.png", VIEWPORT_WIDTH, VIEWPORT_HEIGHT, PADDED_EXPORT_WIDTH, PADDED_EXPORT_HEIGHT);
-
-  cp5.getController("isOccluded").setValue(1);
-
-  cameraPos = getSceneOneCameraPos();
-  exportScene(cameraPos, "sceneOne-occluded.png", EXPORT_WIDTH, EXPORT_HEIGHT, EXPORT_WIDTH, EXPORT_HEIGHT);
-
-  cameraPos = getSceneTwoCameraPos();
-  exportScene(cameraPos, "sceneTwo-occluded.png", EXPORT_WIDTH, EXPORT_HEIGHT, EXPORT_WIDTH, EXPORT_HEIGHT);
-
-  cp5.getController("isOccluded").setValue(prevIsOccluded ? 1 : 0);
+  exportScenes(true, true, "cube-both");
+  exportScenes(true, false, "cube-one");
+  exportScenes(false, true, "cube-two");
 }
 
-void exportScene(PVector cameraPos, String filename, int sceneWidth, int sceneHeight, int exportWidth, int exportHeight) {
-  PGraphics scene = createGraphics(sceneWidth, sceneHeight, P3D);
-  PGraphics export = createGraphics(exportWidth, exportHeight, P3D);
-  drawScene(scene, cameraPos, false);
+void exportScenes(boolean boxOneEnabled, boolean boxTwoEnabled, String baseFilename) {
+  PVector cameraPos;
+  cameraPos = getSceneOneCameraPos();
+  exportScene(cameraPos, boxOneEnabled, boxTwoEnabled, baseFilename + "-perspective-one.png");
+
+  cameraPos = getSceneTwoCameraPos();
+  exportScene(cameraPos, boxOneEnabled, boxTwoEnabled, baseFilename + "-perspective-two.png");
+}
+
+void exportScene(PVector cameraPos, boolean boxOneEnabled, boolean boxTwoEnabled, String filename) {
+  PGraphics scene = createGraphics(min(EXPORT_WIDTH, EXPORT_HEIGHT), min(EXPORT_WIDTH, EXPORT_HEIGHT), P3D);
+  PGraphics export = createGraphics(EXPORT_WIDTH, EXPORT_HEIGHT, P3D);
+  drawScene(scene, cameraPos, boxOneEnabled, boxTwoEnabled, false);
+  drawExportImage(scene, export);
+  export.save(filename);
+}
+
+void drawExportImage(PGraphics scene, PGraphics export) {
   export.beginDraw();
   export.background(0);
   export.imageMode(CENTER);
-  export.image(scene, exportWidth/2, exportHeight/2);
+  export.image(scene, EXPORT_WIDTH/2, EXPORT_HEIGHT/2);
   export.endDraw();
-  export.save(filename);
 }
 
 void controlEvent(ControlEvent theEvent) {
