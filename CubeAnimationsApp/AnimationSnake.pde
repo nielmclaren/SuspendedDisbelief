@@ -9,7 +9,7 @@ class AnimationSnake implements IAnimation {
   }
 
   void step() {
-    snake.advance(0.01);
+    snake.advance(0.02);
   }
 
   void draw(PGraphics g) {

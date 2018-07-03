@@ -2,6 +2,8 @@ import controlP5.*;
 
 final int VIEWPORT_WIDTH = 850;
 final int VIEWPORT_HEIGHT = 850;
+final int EXPORT_WIDTH = 1920;
+final int EXPORT_HEIGHT = 1080;
 final int VIEWPORT_MARGIN = 20;
 final int CAMERA_DISTANCE = 200;
 
@@ -18,6 +20,7 @@ ControlP5 cp5;
 JSONObject settingsJson;
 
 FileNamer fileNamer;
+FileNamer animationFileNamer;
 
 void setup() {
   size(1440, 850, P3D);
@@ -31,6 +34,7 @@ void setup() {
   setupAnimations();
 
   fileNamer = new FileNamer("output/export", "png");
+  animationFileNamer = new FileNamer("output/anim", "/");
 }
 
 void setupUi() {
@@ -82,7 +86,7 @@ void setupAnimations() {
   animations = new ArrayList<IAnimation>();
   animations.add(new AnimationBaseCube(boxOne));
   animations.add(new AnimationSnake(new Snake(boxOne, PI), #7effdb));
-  //animations.add(new AnimationSnake(new Snake(boxTwo, PI), #b693fe));
+  animations.add(new AnimationSnake(new Snake(boxTwo, PI), #b693fe));
 }
 
 void draw() {
@@ -156,6 +160,9 @@ void drawScene(PGraphics g, PVector cameraPos) {
   g.beginDraw();
   g.background(0);
 
+  float cameraZ = (height/2.0) / tan(PI*60.0/360.0);
+  g.perspective(PI/3.0, width/height, 1, 1000000);
+
   if (cameraPos.x == 0 && cameraPos.z == 0) {
     g.camera(cameraPos.x, cameraPos.y, cameraPos.z, 0, 0, 0, 0, 0, 1);
   } else {
@@ -199,10 +206,6 @@ void updateBoxesFromSettings() {
   boxTwo.size = settingsJson.getFloat("boxTwoSize");
 }
 
-void controlEvent(ControlEvent theEvent) {
-  println("got a control event from controller with id " + theEvent.getController().getId());
-}
-
 void perspectiveOne() {
   isPerspectiveOne = true;
 }
@@ -211,8 +214,63 @@ void perspectiveTwo() {
   isPerspectiveOne = false;
 }
 
+void exportAnimations() {
+  animations = new ArrayList<IAnimation>();
+  animations.add(new AnimationSnake(new Snake(boxOne, PI), #7effdb));
+  exportAnimation("output/cube-one-");
+
+  animations = new ArrayList<IAnimation>();
+  animations.add(new AnimationSnake(new Snake(boxTwo, PI), #b693fe));
+  exportAnimation("output/cube-two-");
+
+  animations = new ArrayList<IAnimation>();
+  animations.add(new AnimationSnake(new Snake(boxOne, PI), #7effdb));
+  animations.add(new AnimationSnake(new Snake(boxTwo, PI), #b693fe));
+  exportAnimation("output/cube-both-");
+
+  setupAnimations();
+}
+
+void exportAnimation(String filePrefix) {
+  PVector cameraOnePos = getSceneOneCameraPos();
+  PVector cameraTwoPos = getSceneTwoCameraPos();
+
+  PGraphics scene = createGraphics(min(EXPORT_WIDTH, EXPORT_HEIGHT), min(EXPORT_WIDTH, EXPORT_HEIGHT), P3D);
+  PGraphics export = createGraphics(EXPORT_WIDTH, EXPORT_HEIGHT, P3D);
+  FileNamer animOneFrameFileNamer = new FileNamer(filePrefix + "perspective-one/frame", "png");
+  FileNamer animTwoFrameFileNamer = new FileNamer(filePrefix + "perspective-two/frame", "png");
+
+  int numFrames = 2000;
+  for (int i = 0; i < numFrames; i++) {
+    stepAnimations();
+
+    drawScene(scene, cameraOnePos);
+    drawExportImage(scene, export);
+    export.save(animOneFrameFileNamer.next());
+
+    drawScene(scene, cameraTwoPos);
+    drawExportImage(scene, export);
+    export.save(animTwoFrameFileNamer.next());
+  }
+}
+
+void drawExportImage(PGraphics scene, PGraphics export) {
+  export.beginDraw();
+  export.background(0);
+  export.imageMode(CENTER);
+  export.image(scene, EXPORT_WIDTH/2, EXPORT_HEIGHT/2);
+  export.endDraw();
+}
+
+void controlEvent(ControlEvent theEvent) {
+  println("got a control event from controller with id " + theEvent.getController().getId());
+}
+
 void keyReleased() {
   switch (key) {
+    case 'a':
+      exportAnimations();
+      break;
     case 'e':
       reset();
       break;

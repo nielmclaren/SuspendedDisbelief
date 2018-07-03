@@ -22,7 +22,7 @@ class FileNamer {
 
   String next() {
     File file;
-    while ((file = new File(sketchPath(getFilename(currIndex)))).exists() && currIndex < 1000) {
+    while ((file = new File(sketchPath(getFilename(currIndex)))).exists() && currIndex < 10000) {
       currIndex++;
     }
     return getFilename(currIndex);
