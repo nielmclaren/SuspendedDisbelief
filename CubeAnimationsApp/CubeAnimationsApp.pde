@@ -12,6 +12,7 @@ Box boxOne;
 Box boxTwo;
 
 ArrayList<IAnimation> animations;
+AnimationBolt anim;
 
 ControlP5 cp5;
 
@@ -81,7 +82,9 @@ void reset() {
 void setupAnimations() {
   animations = new ArrayList<IAnimation>();
   animations.add(new AnimationBaseCube(boxOne));
-  animations.add(new AnimationSnake(new Snake(boxOne, 2.0)));
+  //animations.add(new AnimationBolt(boxOne, 0, 1));
+  //animations.add(new AnimationSnake(new Snake(boxOne, 2.0)));
+  anim = new AnimationBolt(boxOne, 0, 1);
 }
 
 void draw() {
@@ -104,6 +107,8 @@ void stepAnimations() {
   for (IAnimation animation : animations) {
     animation.step();
   }
+
+  anim.setTime(map(mouseX, 0, width, 0, 1));
 }
 
 void drawSceneOne() {
@@ -172,6 +177,10 @@ void drawAnimations(PGraphics g) {
     animation.draw(g);
     g.popStyle();
   }
+
+  g.pushStyle();
+  anim.draw(g);
+  g.popStyle();
 }
 
 void defaultSettings() {

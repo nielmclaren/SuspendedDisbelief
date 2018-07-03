@@ -16,6 +16,33 @@ class Snake {
     updateVertices();
   }
 
+  Snake(Box boxArg, float lengthArg, int vertex0, int vertex1) {
+    box = boxArg;
+    length = lengthArg;
+    start = 0;
+
+    int vertex = box.getRandomVertex();
+    vertices = new ArrayList<Integer>();
+    vertices.add(vertex0);
+    vertices.add(vertex1);
+    updateVertices();
+  }
+
+  float getStart() {
+    return start;
+  }
+
+  void setStart(float v) {
+    start = v;
+
+    while (start >= 1) {
+      vertices.remove(0);
+      start -= 1;
+    }
+
+    updateVertices();
+  }
+
   float getLength() {
     return length;
   }
@@ -37,7 +64,7 @@ class Snake {
   }
 
   private void updateVertices() {
-    int targetCount = ceil(start + length) + 1;
+    int targetCount = max(2, ceil(start + length) + 1);
     while (vertices.size() > targetCount) {
       vertices.remove(vertices.size() - 1);
     }
