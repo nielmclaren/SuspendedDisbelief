@@ -5,6 +5,8 @@ final int VIEWPORT_HEIGHT = 850;
 final int VIEWPORT_MARGIN = 20;
 final int EXPORT_WIDTH = 2400;
 final int EXPORT_HEIGHT = 2400;
+final int PADDED_EXPORT_WIDTH = 2400;
+final int PADDED_EXPORT_HEIGHT = 2400;
 final int CAMERA_DISTANCE = 200;
 final int OVERHEAD_CAMERA_DISTANCE = 500;
 final int MARKER_SIZE = 20;
@@ -389,6 +391,10 @@ PVector getCameraPosFromBox(Box box) {
 void drawScene(PGraphics g, PVector cameraPos, boolean displayOverheadAnnotations) {
   g.beginDraw();
   g.background(0);
+
+  float cameraZ = (height/2.0) / tan(PI*60.0/360.0);
+  g.perspective(PI/3.0, width/height, 1, 1000000); //cameraZ/10.0, cameraZ*10.0);
+
   if (cameraPos.x == 0 && cameraPos.z == 0) {
     g.camera(cameraPos.x, cameraPos.y, cameraPos.z, 0, 0, 0, 0, 0, 1);
   } else {
@@ -416,7 +422,7 @@ void drawScene(PGraphics g, PVector cameraPos, boolean displayOverheadAnnotation
   }   else {
     g.noFill();
   }
-  g.strokeWeight(5);
+  g.strokeWeight(32);
   g.pushMatrix();
 
   if (cp5.getController("boxOneEnabled").getValue() != 0) {
@@ -565,30 +571,36 @@ void exportImages() {
   cp5.getController("isOccluded").setValue(0);
 
   cameraPos = getSceneOneCameraPos();
-  exportScene(cameraPos, "sceneOne.png");
+  exportScene(cameraPos, "sceneOne.png", EXPORT_WIDTH, EXPORT_HEIGHT, EXPORT_WIDTH, EXPORT_HEIGHT);
 
   cameraPos = getSceneTwoCameraPos();
-  exportScene(cameraPos, "sceneTwo.png");
+  exportScene(cameraPos, "sceneTwo.png", EXPORT_WIDTH, EXPORT_HEIGHT, EXPORT_WIDTH, EXPORT_HEIGHT);
+
+  cameraPos = getSceneOneCameraPos();
+  exportScene(cameraPos, "sceneOne-padded.png", VIEWPORT_WIDTH, VIEWPORT_HEIGHT, PADDED_EXPORT_WIDTH, PADDED_EXPORT_HEIGHT);
+
+  cameraPos = getSceneTwoCameraPos();
+  exportScene(cameraPos, "sceneTwo-padded.png", VIEWPORT_WIDTH, VIEWPORT_HEIGHT, PADDED_EXPORT_WIDTH, PADDED_EXPORT_HEIGHT);
 
   cp5.getController("isOccluded").setValue(1);
 
   cameraPos = getSceneOneCameraPos();
-  exportScene(cameraPos, "sceneOne-occluded.png");
+  exportScene(cameraPos, "sceneOne-occluded.png", EXPORT_WIDTH, EXPORT_HEIGHT, EXPORT_WIDTH, EXPORT_HEIGHT);
 
   cameraPos = getSceneTwoCameraPos();
-  exportScene(cameraPos, "sceneTwo-occluded.png");
+  exportScene(cameraPos, "sceneTwo-occluded.png", EXPORT_WIDTH, EXPORT_HEIGHT, EXPORT_WIDTH, EXPORT_HEIGHT);
 
   cp5.getController("isOccluded").setValue(prevIsOccluded ? 1 : 0);
 }
 
-void exportScene(PVector cameraPos, String filename) {
-  PGraphics scene = createGraphics(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, P3D);
-  PGraphics export = createGraphics(EXPORT_WIDTH, EXPORT_HEIGHT, P3D);
+void exportScene(PVector cameraPos, String filename, int sceneWidth, int sceneHeight, int exportWidth, int exportHeight) {
+  PGraphics scene = createGraphics(sceneWidth, sceneHeight, P3D);
+  PGraphics export = createGraphics(exportWidth, exportHeight, P3D);
   drawScene(scene, cameraPos, false);
   export.beginDraw();
   export.background(0);
   export.imageMode(CENTER);
-  export.image(scene, EXPORT_WIDTH/2, EXPORT_HEIGHT/2);
+  export.image(scene, exportWidth/2, exportHeight/2);
   export.endDraw();
   export.save(filename);
 }
