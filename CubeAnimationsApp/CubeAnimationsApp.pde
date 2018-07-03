@@ -190,12 +190,12 @@ void loadSettingsFromFile(String filename) {
 }
 
 void updateBoxesFromSettings() {
-  boxOne.yaw = settingsJson.getFloat("boxOneYaw");
-  boxOne.pitch = settingsJson.getFloat("boxOnePitch");
+  boxOne.yaw = radians(settingsJson.getFloat("boxOneYaw"));
+  boxOne.pitch = radians(settingsJson.getFloat("boxOnePitch"));
   boxOne.size = settingsJson.getFloat("boxOneSize");
 
-  boxTwo.yaw = settingsJson.getFloat("boxTwoYaw");
-  boxTwo.pitch = settingsJson.getFloat("boxTwoPitch");
+  boxTwo.yaw = radians(settingsJson.getFloat("boxTwoYaw"));
+  boxTwo.pitch = radians(settingsJson.getFloat("boxTwoPitch"));
   boxTwo.size = settingsJson.getFloat("boxTwoSize");
 }
 
